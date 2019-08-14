@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quarticon_Quartic>
-            <version>1.0.6</version>
+            <version>1.0.8</version>
         </Quarticon_Quartic>
     </modules>
     <global>
@@ -159,17 +159,33 @@
                 </all>-->
                 <admin>
                     <children>
+                        <catalog>
+                            <children>
+                                <quartic translate="title" module="quartic">
+                                    <title>QUARTICON | Quartic</title>
+                                </quartic>
+                            </children>
+                        </catalog>
                         <system>
                             <children>
                                 <config>
                                     <children>
-                                        <quartic>
+                                        <quartic translate="title" module="quartic">
                                             <title>QUARTICON | Quartic</title>
                                         </quartic>
                                     </children>
                                 </config>
                             </children>
                         </system>
+						<quartic translate="title" module="quartic">
+							<title>Quartic</title>
+							<sort_order>90</sort_order>
+							<children>
+                                <maps translate="title" module="quartic">
+                                    <title>Attribute mapping</title>
+                                </maps>
+							</children>
+						</quartic>
                     </children>
                 </admin>
             </resources>
@@ -194,15 +210,15 @@
             </quartic>
         </jobs>
     </crontab>
-    <admin>
-        <routers>
-            <quartic>
-                <use>admin</use>
-                <args>
-                    <module>Quarticon_Quartic</module>
-                    <frontName>quartic</frontName>
-                </args>
-            </quartic>
-        </routers>
-    </admin>
+	<admin>
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+						<Quarticon_Quartic before="Mage_Adminhtml">Quarticon_Quartic_Adminhtml</Quarticon_Quartic>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>
+	</admin>
 </config>

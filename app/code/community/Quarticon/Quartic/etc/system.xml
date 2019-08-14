@@ -106,7 +106,7 @@
                             <label>Get Placements</label>
                             <frontend_type>button</frontend_type>
                             <frontend_model>quartic/adminhtml_system_config_form_field_button</frontend_model>
-                            <button_url>quartic/adminhtml_api/placements</button_url>
+                            <button_url>adminhtml/api/placements</button_url>
                             <comment>Load placement snippets from your QuarticON account</comment>
                             <sort_order>100</sort_order>
                             <show_in_default>1</show_in_default>
@@ -118,7 +118,7 @@
                             <label>Send Transaction History</label>
                             <frontend_type>button</frontend_type>
                             <frontend_model>quartic/adminhtml_system_config_form_field_button</frontend_model>
-                            <button_url>quartic/adminhtml_api/prepareorders</button_url>
+                            <button_url>adminhtml/api/prepareorders</button_url>
                             <comment>Send transaction history to your QuarticON account</comment>
                             <sort_order>110</sort_order>
                             <show_in_default>1</show_in_default>

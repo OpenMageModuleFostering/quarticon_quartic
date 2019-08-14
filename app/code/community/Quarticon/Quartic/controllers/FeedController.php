@@ -43,39 +43,39 @@ class Quarticon_Quartic_FeedController extends Mage_Core_Controller_Front_Action
 			$filepath = Mage::getBaseDir('var') . "/quartic/" . $filename;
 			$olderThan = 24 * 3600; //24h
 			
-			if(file_exists($filepath) && (time() - filemtime($filepath) < $olderThan)) { // not older than 24h
-				header("Content-Type:text/xml");
-				$contents = file_get_contents($filepath);
-				echo $contents;
-				$this->log();
-				die();
-			} elseif(file_exists($filepath) && (time() - filemtime($filepath) >= $olderThan)) { // file too old
-				$this->setHeader(512,'File Too old - ' . date('c',filemtime($filepath)));
-				$this->log();
-				die();
-			} elseif(!file_exists($filepath)) { //file not exists
-				$this->setHeader(513,'File not exists');
-				die();
-			} else {
-				$this->setHeader(514,'Something is wrong'); // nobody will never see this... that's sad
-				$this->log();
-				die();
-			}
+			if(file_exists($filepath) && (time() - filemtime($filepath) < $olderThan) && !$this->getRequest()->getParam('refresh')) { // not older than 24h
+                header("Content-Type:text/xml");
+                header("Data_source: file",true);
+                $contents = file_get_contents($filepath);
+                echo $contents;
+                $this->log();
+                die();
+            } else {
+                Mage::getModel('quartic/cron')->refreshFeed($storeId);
+                if(file_exists($filepath)) { // refreshed, try again
+                    header("Content-Type:text/xml");
+                    header("Data_source: regenerated",true);
+                    $contents = file_get_contents($filepath);
+                    echo $contents;
+                    die();
+                } elseif(file_exists($filepath) && (time() - filemtime($filepath) >= $olderThan)) { // file too old
+                    header("Error: 512 File Too old - " . date('c',filemtime($filepath)),true,512);
+                    $this->log();
+                    die();
+                } elseif(!file_exists($filepath)) { //file not exists
+                    header("Error: 513 File not exists",true,513);
+                    $this->log();
+                    die();
+                } else {
+                    header("Error: 514 Something is wrong",true,514); // nobody will never see this... that's sad
+                    $this->log();
+                    die();
+                }
+            }
         } else {
             $this->_redirect('/');
         }
     }
-	
-	private function setHeader($code,$msg)
-	{
-		$phpSapiName    = substr(php_sapi_name(), 0, 3);
-		if ($phpSapiName == 'cgi' || $phpSapiName == 'fpm') {
-			header('Status: '.$code.' '.$msg);
-		} else {
-			$protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
-			header($protocol.' '.$code.' '.$msg);
-		}
-	}
 
     /**
      * View orders feed action (if hash and config are active)

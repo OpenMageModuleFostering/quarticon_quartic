@@ -31,11 +31,9 @@ class Quarticon_Quartic_Block_Getter_Order extends Quarticon_Quartic_Block_Scrip
     {
         $items = $this->getOrder()->getAllItems();
         $products = array();
-		$qHelper = Mage::helper('quartic');
         foreach ($items as $item) {
             if (!$item->getParentItemId()) {
                 $product = Mage::helper('quartic')->getProduct($item);
-				$product = $qHelper->getParentProductId($product);
                 $products[] = array(
                     'product' => $product,
                     'price' => $item->getPriceInclTax(),

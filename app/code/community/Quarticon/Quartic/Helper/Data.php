@@ -66,21 +66,4 @@ class Quarticon_Quartic_Helper_Data extends Mage_Core_Helper_Abstract
             return $item->getSku();
         }
     }
-	
-	public function getParentProductId($productId) {
-
-        $parentIds = Mage::getResourceSingleton('catalog/product_type_configurable')->getParentIdsByChild($productId);
-        if (!isset($parentIds[0])) {
-            $parentIds = Mage::getSingleton('catalog/product_type_grouped')->getParentIdsByChild($productId);
-        }
-        foreach($parentIds as $parentId) {
-            $parent_product = Mage::getModel('catalog/product')->load($parentId);
-            if($parent_product && $parent_product->getId() && $parent_product->getStatus() == 1) {
-                $productId = $parent_product->getId();
-                break;
-            }
-        }
-
-        return $productId;
-    }
 }

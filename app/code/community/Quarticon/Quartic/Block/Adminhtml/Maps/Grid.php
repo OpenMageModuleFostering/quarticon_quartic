@@ -19,6 +19,7 @@ class Quarticon_Quartic_Block_Adminhtml_Maps_Grid extends Mage_Adminhtml_Block_W
     protected function _prepareCollection()
     {
         $collection = Mage::getModel('quartic/maps')->getCollection();
+        $collection->addFieldToFilter('quartic_attribute',array('nlike' => '%price')); //hide price mapping
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
