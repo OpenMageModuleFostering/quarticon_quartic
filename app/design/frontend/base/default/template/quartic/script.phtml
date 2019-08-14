@@ -1,0 +1,27 @@
+<?php if ($this->isActive()): ?>
+<script type="text/javascript">
+    var upsScript = document.createElement('script');
+    var upsProtocol = ((document.location.protocol=='https:')?'https://secu':'http://');
+    upsScript.setAttribute('type','text/javascript');
+    upsScript.setAttribute('src', upsProtocol+'rec.quartic.pl/quartic.js');
+    upsScript.setAttribute('async','async');
+    var upsAnchor = document.getElementsByTagName('script')[0];
+    upsAnchor.parentNode.insertBefore(upsScript, upsAnchor);
+    function quartic_rec (recommendations, slot) {
+        var parameters = { slot: slot };
+        var i;
+        var count = recommendations.length;
+        for (var i = 0; i < count; i++) {
+            parameters['sku[' + i + ']'] = recommendations[i][0];
+            parameters['url[' + i + ']'] = recommendations[i][1];
+        }
+        new Ajax.Request('<?php echo Mage::getUrl('quartic/frame/index'); ?>', {
+            method: 'post',
+            parameters: parameters,
+            onSuccess: function(transport) {
+                $(slot).update(transport.responseText);
+            }
+        });
+    }
+</script>
+<?php endif; ?>

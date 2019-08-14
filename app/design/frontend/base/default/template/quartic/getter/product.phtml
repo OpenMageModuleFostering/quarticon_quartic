@@ -1,0 +1,10 @@
+<?php if ($this->isActive()): ?>
+<script type="text/javascript"> 
+    var upsParams = upsParams || [] 
+    upsParams.push(['action','view'])  
+    upsParams.push(['customer','<?php echo $this->getCustomer(); ?>'])
+    upsParams.push(['user', '<?php echo $this->getUser(); ?>'])
+    upsParams.push(['product', '<?php echo Mage::helper('quartic')->getProduct($this->getProduct()); ?>']) 
+    upsParams.push(['execute'])
+</script>
+<?php endif; ?>

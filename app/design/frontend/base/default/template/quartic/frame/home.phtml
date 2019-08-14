@@ -1,0 +1,12 @@
+<?php if ($this->isActive()): ?>
+<div id="slt_home"></div>
+<script type="text/javascript">
+    var upsParams = upsParams || [];
+    upsParams.push(['action','recommend']);
+    upsParams.push(['tag_id','quartic_home']);
+    upsParams.push(['customer', '<?php echo $this->getCustomer(); ?>']);
+    upsParams.push(['slot', 'slt_home']);
+    upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
+    upsParams.push(['execute']);
+</script>
+<?php endif; ?>

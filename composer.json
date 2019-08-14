@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Quarticon_Quartic",
+    "type": "magento-module",
+    "license": "Academic-Free-License-(AFL)",
+    "homepage": "",
+    "description": "Recommend - personalized product recommendations, by QuarticON.com",
+    "authors": [
+    {
+        "name": "QuarticON",
+        "email": "contact@quarticon.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}

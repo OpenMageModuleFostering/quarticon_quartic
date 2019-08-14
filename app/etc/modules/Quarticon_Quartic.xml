@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <modules>
+        <Quarticon_Quartic>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Quarticon_Quartic>
+    </modules>
+</config>

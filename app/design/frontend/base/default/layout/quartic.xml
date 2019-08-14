@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="before_body_end">
+            <block type="quartic/script" name="quartic_script" template="quartic/script.phtml" />
+        </reference>
+    </default>
+    <catalog_product_view>
+        <reference name="before_body_end">
+            <block type="quartic/getter_product" name="quartic_getter_product" before="quartic_script" template="quartic/getter/product.phtml" />
+        </reference>
+        <reference name="content">
+            <block type="quartic/frame_product" name="quartic_frame_product" after="-" template="quartic/frame/product.phtml" />
+        </reference>
+    </catalog_product_view>
+    <checkout_onepage_success>
+        <reference name="before_body_end">
+            <block type="quartic/getter_order" name="quartic_getter_order" before="quartic_script" template="quartic/getter/order.phtml" />
+        </reference>
+    </checkout_onepage_success>
+    <cms_index_index>
+        <reference name="content">
+            <block type="quartic/frame_home" name="quartic_frame_home" after="-" template="quartic/frame/home.phtml" />
+        </reference>
+    </cms_index_index>
+    <catalog_category_default>
+        <reference name="content">
+            <block type="quartic/frame_category" name="quartic_frame_category" after="-" />
+        </reference>
+    </catalog_category_default>
+    <catalog_category_layered>
+        <reference name="content">
+            <block type="quartic/frame_category" name="quartic_frame_category" after="-" />
+        </reference>
+    </catalog_category_layered>
+    <checkout_cart_index>
+        <reference name="content">
+            <block type="quartic/frame_cart" name="quartic_frame_cart" after="-" template="quartic/frame/cart.phtml" />
+        </reference>
+    </checkout_cart_index>
+</layout>

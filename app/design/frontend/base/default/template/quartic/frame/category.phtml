@@ -1,0 +1,13 @@
+<?php if ($this->isActive()): ?>
+<div id="slt_category"></div>
+<script type="text/javascript">
+    var upsParams = upsParams || []
+    upsParams.push(['action','recommend']);
+    upsParams.push(['tag_id','quartic_category']);
+    upsParams.push(['customer', '<?php echo $this->getCustomer(); ?>']);
+    upsParams.push(['slot', 'slt_category']);
+    upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
+    upsParams.push(['filter', '<?php echo $this->getCurrentCategory()->getId(); ?>']);
+    upsParams.push(['execute']);
+</script>
+<?php endif; ?>

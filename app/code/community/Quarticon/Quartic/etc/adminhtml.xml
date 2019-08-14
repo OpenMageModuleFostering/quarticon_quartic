@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+        <catalog>
+            <children>
+                <quartic translate="title" module="quartic">
+                    <title>QUARTICON | Quartic</title>
+                    <action>quartic/adminhtml_index/urls</action>
+                    <sort_order>1500</sort_order>
+                </quartic>
+             </children>
+        </catalog>
+    </menu>
+</config>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addCss">
+                <name>quartic.css</name>
+            </action>
+        </reference>
+    </default>
+    <quartic_adminhtml_index_urls>
+        <reference name="content">
+            <block type="quartic/admin_urls" name="quartic_urls" />
+        </reference>
+    </quartic_adminhtml_index_urls>
+</layout>

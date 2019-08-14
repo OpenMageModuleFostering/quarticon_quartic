@@ -1,0 +1,16 @@
+<?php if ($this->isActive()): ?>
+<?php $productId = $this->getProductId(); ?>
+<?php if ($productId): ?>
+<div id="slt_product"></div>
+<script type="text/javascript">
+    var upsParams = upsParams || [];
+    upsParams.push(['action','recommend']);
+    upsParams.push(['tag_id','quartic_product']);
+    upsParams.push(['customer', '<?php echo $this->getCustomer(); ?>']);
+    upsParams.push(['slot', 'slt_product']);
+    upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
+    upsParams.push(['product', '<?php echo $productId; ?>']);
+    upsParams.push(['execute']);
+</script>
+<?php endif; ?>
+<?php endif; ?>
