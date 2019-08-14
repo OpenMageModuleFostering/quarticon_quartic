@@ -157,9 +157,11 @@ class Quarticon_Quartic_FeedController extends Mage_Core_Controller_Front_Action
             $mem_writer->openMemory();
             $mem_writer->setIndent(true);
             $writer->startElement('orders');
-            $writer->writeAttribute('xmlns', "http://alpha.quarticon.com/docs/transactions/1.0/schema");
+            $writer->writeAttribute('xmlns', "http://cp.quarticon.com/docs/transactions/1.1/schema");
             $writer->writeAttribute('xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance");
-            $writer->writeAttribute('xsi:schemaLocation', "http://quartic.pl/catalog/1.0/transactions http://alpha.quarticon.com/docs/transactions/1.0/schema/quartic_transactions_1.0.xsd");
+            $writer->writeAttribute('xsi:schemaLocation', "http://quartic.pl/catalog/1.1/transactions
+http://cp.quarticon.com/docs/transactions/1.1/schema/quartic_transactions_1.1
+.xsd");
             $_order = Mage::getModel('quartic/order');
             $count = $_order->getCollectionCount();
             $steps = ceil($count / Quarticon_Quartic_Model_Order::ITERATION_STEP);

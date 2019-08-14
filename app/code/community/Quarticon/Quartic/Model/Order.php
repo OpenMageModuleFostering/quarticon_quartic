@@ -59,10 +59,10 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
 
     public function getCollectionCount()
     {
-        $sql = 'select count(*) as c from ' . $this->_getOrdersTable() . ' as o ' .
-            'left join ' . $this->_getOrderItemsTable() . ' as i on(i.order_id = o.entity_id and i.parent_item_id is null) ' .
-            'where o.state="complete"';
-            //'where o.store_id = ' . $this->_getStoreId();
+        $sql = 'select count(*) as c from ' . $this->_getOrdersTable() . ' as o '
+            . 'left join ' . $this->_getOrderItemsTable() . ' as i '
+            . 'on(i.order_id = o.entity_id and i.parent_item_id is null) '
+        ;
 
         $q = $this->_getDB()->fetchRow($sql);
         return $q['c'];
@@ -70,11 +70,11 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
 
     public function getAll($page_num = 1, $page_size = 10)
     {
-        $sql = 'select o.increment_id, o.created_at, o.customer_id, i.product_id, i.sku, i.qty_ordered, i.price_incl_tax, i.product_type, p.sku as real_sku from ' . $this->_getOrdersTable() . ' as o ' .
-            'left join ' . $this->_getOrderItemsTable() . ' as i on(i.order_id = o.entity_id and i.parent_item_id is null) ' .
-            'left join ' . $this->_getProductsTable() . ' as p on(i.product_id = p.entity_id) ' .
-            'where o.state="complete" order by i.item_id limit ' . (($page_num - 1) * $page_size) . ', ' . $page_size;
-        //'where o.store_id = ' . $this->_getStoreId() . ' order by i.item_id limit ' . (($page_num - 1) * $page_size) . ', ' . $page_size;
+        $sql = 'select o.increment_id, o.created_at, o.customer_id, i.product_id, i.sku, i.qty_ordered, i.price_incl_tax, i.product_type, p.sku as real_sku from ' . $this->_getOrdersTable() . ' as o '
+            . 'left join ' . $this->_getOrderItemsTable() . ' as i on(i.order_id = o.entity_id and i.parent_item_id is null) '
+            . 'left join ' . $this->_getProductsTable() . ' as p on(i.product_id = p.entity_id) '
+            . 'order by i.item_id limit ' . (($page_num - 1) * $page_size) . ', ' . $page_size
+        ;
         $collection = $this->_getDB()->fetchAll($sql);
         foreach ($collection as $order) {
             $o = array(
@@ -91,7 +91,7 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
         unset($collection);
         return $orders;
     }
-    
+
     public function getFilePath()
     {
         return 'var/cache/quartic_order_feed.xml';

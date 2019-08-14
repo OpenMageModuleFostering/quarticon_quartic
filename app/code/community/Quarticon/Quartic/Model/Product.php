@@ -11,10 +11,14 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
     protected $_categories = array();
     protected $_imagesUrl = null;
     protected $_minQty = false;
+    protected $_config = null;
 
     protected function getConfig()
     {
-        return Mage::getModel('quartic/config');
+        if (is_null($this->_config)) {
+            $this->_config = Mage::getModel('quartic/config');
+        }
+        return $this->_config;
     }
 
     protected function _getCollection()
@@ -46,12 +50,7 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
     {
         if ($this->getConfig()->getMinQty()) {
             $collection->joinField(
-                'qty',
-                'cataloginventory/stock_item',
-                'qty',
-                'product_id=entity_id',
-                null,
-                'left'
+                'qty', 'cataloginventory/stock_item', 'qty', 'product_id=entity_id', null, 'left'
             );
         }
         return $collection;
@@ -84,6 +83,9 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         }
         if ($product_id) {
             $collection->addFieldToFilter('entity_id', $product_id);
+        }
+        if ($this->getConfig()->addThumbs()) {
+            $collection->addAttributeToSelect('image');
         }
         $collection = $this->_addAdditionalAttributes($collection);
         $collection = $this->_addQtyField($collection);
@@ -168,13 +170,14 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         if ($special_price) {
             $offer['old_price'] = $this->getPriceIncludingTax($product);
         }
-        foreach ($images as $image) {
-            $disabled = (bool) (($image['disabled'] !== null) ? $image['disabled'] : $image['disabled_default']);
-            if (!$disabled) {
-                $offer['thumb'] = $this->_imagesUrl . $image['file'];
-                break;
+        if ($this->getConfig()->addThumbs()) {
+            try {
+                $offer['thumb'] = $product->getImageUrl();
+            } catch (Exception $e) {
+                
             }
         }
+
         unset($images);
         if (!empty($author_mapping)) {
             $value = $product->getData($author_mapping);
