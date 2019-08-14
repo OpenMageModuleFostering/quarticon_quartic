@@ -5,6 +5,7 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
 
     const ITERATION_STEP = 1000;
 
+    protected $_resource = null;
     protected $_db = null;
     protected $_orders_table = null;
     protected $_order_items_table = null;
@@ -24,11 +25,19 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
         }
         return $this->_store_id;
     }
+    
+    protected function _getResource()
+    {
+        if (!$this->_resource) {
+            $this->_resource = Mage::getSingleton('core/resource');
+        }
+        return $this->_resource;
+    }
 
     protected function _getDB()
     {
         if (!$this->_db) {
-            $this->_db = Mage::getSingleton('core/resource')->getConnection('core_read');
+            $this->_db = $this->_getResource()->getConnection('core_read');
         }
         return $this->_db;
     }
@@ -36,7 +45,7 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
     protected function _getOrdersTable()
     {
         if (!$this->_orders_table) {
-            $this->_orders_table = $this->_getDB()->getTableName('sales_flat_order');
+            $this->_orders_table = $this->_getResource()->getTableName('sales_flat_order');
         }
         return $this->_orders_table;
     }
@@ -44,7 +53,7 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
     protected function _getOrderItemsTable()
     {
         if (!$this->_order_items_table) {
-            $this->_order_items_table = $this->_getDB()->getTableName('sales_flat_order_item');
+            $this->_order_items_table = $this->_getResource()->getTableName('sales_flat_order_item');
         }
         return $this->_order_items_table;
     }
@@ -52,7 +61,7 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
     protected function _getProductsTable()
     {
         if (!$this->_products_table) {
-            $this->_products_table = $this->_getDB()->getTableName('catalog_product_entity');
+            $this->_products_table = $this->_getResource()->getTableName('catalog_product_entity');
         }
         return $this->_products_table;
     }
@@ -104,5 +113,32 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
     public function getFilePath()
     {
         return 'var/cache/quartic_order_feed.xml';
+    }
+
+    /**
+     * Send event "order history is ready" to quartic
+     * @param bool|int $storeId
+     */
+    public function sendTransacionsEvent($storeId = false) {
+        $helper = Mage::helper('quartic');
+        $api = Mage::getModel('quartic/client_api');
+        if (!$storeId) {
+            $storeId = 0;
+        }
+        $helper->log('sendTransacionsEvent, storeId: '.$storeId);
+        if ($helper->getStoreScopeData($storeId, 'orders')) {
+            $this->log('Orders history already sent: '.$storeId);
+            return;
+        }
+
+        $data = array(
+            'url' => Mage::getUrl('quartic/feed/orders', array('store' => $storeId)),
+        );
+        try {
+            $result = $api->post('transactions', array('data' => $data));
+        } catch (Exception $e) {
+            $helper->log('Problem during sending transaction history for storeId: '.$storeId);
+        }
+        $helper->setStoreScopeData($storeId, 'orders', true, true);
     }
 }

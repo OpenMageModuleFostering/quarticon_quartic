@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quarticon_Quartic>
-            <version>1.3.0.0</version>
+            <version>1.3.1.1</version>
         </Quarticon_Quartic>
     </modules>
     <global>
@@ -19,9 +19,6 @@
             <quartic_mysql4>
                 <class>Quarticon_Quartic_Model_Mysql4</class>
                 <entities>
-                    <placement>
-                        <table>quartic_placements</table>
-                    </placement>
                     <history>
                         <table>quartic_history</table>
                     </history>
@@ -108,7 +105,7 @@
         <quartic>
             <config>
                 <active>0</active>
-                <use_sku>1</use_sku>
+                <use_sku>0</use_sku>
                 <add_thumbs>0</add_thumbs>
                 <only_in_stock>0</only_in_stock>
                 <show_disabled_products>1</show_disabled_products>
@@ -142,6 +139,15 @@
                     </quartic>
                 </observers>
             </admin_system_config_changed_section_quartic>
+            <controller_action_layout_load_before>
+                <observers>
+                    <quartic_predispatch>
+                        <type>singleton</type>
+                        <class>quartic/observer_adminhtml</class>
+                        <method>adminPageBefore</method>
+                    </quartic_predispatch>
+                </observers>
+            </controller_action_layout_load_before>
         </events>
         <translate>
             <modules>
@@ -163,9 +169,12 @@
                             <children>
                                 <config>
                                     <children>
-                                        <quartic>
+                                        <!-- <quartic>
                                             <title>QUARTICON | Quartic</title>
-                                        </quartic>
+                                        </quartic> -->
+                                        <plugin>
+                                            <title>Plugin</title>
+                                        </plugin>
                                     </children>
                                 </config>
                             </children>

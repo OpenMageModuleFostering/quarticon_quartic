@@ -41,7 +41,12 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         return $this->iterationStep;
     }
 
-    protected function _getCollection()
+    /**
+     * Get products
+     * @param bool $simple simple visibility filter rules?
+     * @return mixed
+     */
+    protected function _getCollection($simple = false)
     {
         $_product = Mage::getModel('catalog/product');
         $storeId = $this->_getStoreId();
@@ -59,11 +64,29 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         if ($productIds) {
             $collection->addAttributeToFilter('entity_id', explode(',',$productIds));
         }
+
         $collection = $this->_addQtyField($collection);
-        $collection = $this->_addDisableFilters($collection);
+        if (!$simple) {
+            $collection = $this->_addDisableFilters($collection);
+        } else {
+            $collection
+                ->addAttributeToFilter('type_id', array(
+                    Mage_Catalog_Model_Product_Type::TYPE_SIMPLE,
+                    Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE,
+                    Mage_Catalog_Model_Product_Type::TYPE_VIRTUAL,
+                    Mage_Catalog_Model_Product_Type::TYPE_BUNDLE,
+                    'downloadable'
+                ))
+                ->addAttributeToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
+        }
 		return $collection;
     }
 
+    /**
+     * Define visibility filters from config settings
+     * @param $collection
+     * @return mixed
+     */
     protected function _addDisableFilters($collection)
     {
         if (!$this->getConfig()->showDisabledProducts()) {
@@ -96,14 +119,19 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         return $collection;
     }
 
-    public function getCollectionCount()
+    /**
+     * Get collection items count
+     * @param bool $simple simple visibility filter rules?
+     * @return mixed
+     */
+    public function getCollectionCount($simple = false)
     {
-        return $this->_getCollection()->getSize();
+        return $this->_getCollection($simple)->getSize();
     }
+    
     /*
      * Get's product collection with attribute mapping
      */
-
     protected function _getFinalCollection($page_num = 1, $page_size = 10, $product_id = false)
     {
         $joinType = $this->joinType;
@@ -209,6 +237,35 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         return $offers;
     }
 
+    /**
+     * Get simple (id, url) products list array
+     * @param int $page_num
+     * @param int $page_size
+     * @return array
+     */
+    public function getSimpleProductList($page_num = 1, $page_size = 10) {
+        $collection = $this->_getCollection(true)
+            ->setPage($page_num, $page_size)
+            ->addAttributeToSelect('url_path', $this->joinType);
+        $product_items = $collection->getItems();
+
+        $feed = array();
+        $model = Mage::getModel('catalog/product');
+        $helper = Mage::helper('quartic');
+        foreach ($product_items as $item) {
+            $id = $helper->getProduct($item);
+            $product = $model->load($id);
+            if($product->getData('quarticon_exclude') == 1) {
+                continue;
+            }
+            $feed[] = array(
+                'id' => $id,
+                'link' => $item->getProductUrl()
+            );
+        }
+        return $feed;
+    }
+    
     protected function _getSingleProduct($product_id)
     {
         $collection = $this->_getFinalCollection(1, 1, $product_id);
@@ -545,6 +602,10 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         return $_productCollection;
     }
 
+    /**
+     * Get store id (from request parameter or detect)
+     * @return int
+     */
     private function _getStoreId()
     {
         $params = Mage::app()->getRequest()->getParams();

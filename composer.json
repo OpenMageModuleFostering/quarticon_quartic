@@ -1,7 +1,7 @@
 {
     "name": "OpenMageModuleFostering/Quarticon_Quartic",
     "type": "magento-module",
-    "license": "Academic-Free-License-(AFL)",
+    "license": "OSL-v3.0",
     "homepage": "",
     "description": "Recommend - personalized product recommendations, by QuarticON.com",
     "authors": [

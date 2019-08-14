@@ -3,7 +3,7 @@
 class Quarticon_Quartic_Model_Client_Resource_Curl extends Mage_HTTP_Client_Curl
 {
 
-    const CURL_API_URL = 'http://api.quarticon.com/api/v1/';
+    const CURL_API_URL = 'https://api.quarticon.com/api/v1/';
     const CURL_API_INPUT = 'application/json';
     const CURL_API_OUTPUT = 'json';
 
@@ -12,9 +12,9 @@ class Quarticon_Quartic_Model_Client_Resource_Curl extends Mage_HTTP_Client_Curl
      *
      * @param string $uri uri relative to host, ex. "/index.php"
      */
-    public function get($uri)
+    public function get($uri, $params=array(), $url = null)
     {
-        $this->makeRequest("GET", $uri);
+        $this->makeRequest("GET", $uri, $params, $url);
         return $this->returnResponse();
     }
 
@@ -22,9 +22,9 @@ class Quarticon_Quartic_Model_Client_Resource_Curl extends Mage_HTTP_Client_Curl
      * Make POST request
      * @see lib/Mage/HTTP/Mage_HTTP_Client#post($uri, $params)
      */
-    public function post($uri, $params)
+    public function post($uri, $params, $url = null)
     {
-        $this->makeRequest("POST", $uri, $params);
+        $this->makeRequest("POST", $uri, $params, $url);
         return $this->returnResponse();
     }
 
@@ -78,11 +78,15 @@ class Quarticon_Quartic_Model_Client_Resource_Curl extends Mage_HTTP_Client_Curl
      * @param string $method
      * @param string $uri
      * @param array $params
+     * @param string $url (optional) base url
      * @return null
      */
-    protected function makeRequest($method, $uri, $params = array())
+    protected function makeRequest($method, $uri, $params = array(), $url = null)
     {
-        $uri = self::CURL_API_URL . $uri;
+        if (!$url) {
+            $url = self::CURL_API_URL;
+        }
+        $uri = $url . $uri;
         Mage::log($method . ' ' . $uri, null, 'quartic.log');
         $this->_ch = curl_init();
         $this->curlOption(CURLOPT_URL, $uri);

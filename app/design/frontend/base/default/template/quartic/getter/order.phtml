@@ -2,16 +2,17 @@
 <?php $order = $this->getOrder(); ?>
 <?php $order_items = $this->getProducts(); ?>
 <script type="text/javascript">
-    var upsParams = upsParams || [];
-    upsParams.push(['customer','<?php echo $this->getCustomer(); ?>']);
-    upsParams.push(['transaction', '<?php echo $order->getIncrementId(); ?>']);
-    upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
-<?php foreach ($order_items as $item): ?>
-    upsParams.push(['action','purchase']);    
-    upsParams.push(['product','<?php echo $item['product']; ?>']);
-    upsParams.push(['price','<?php echo $item['price']; ?>']);
-    upsParams.push(['quantity','<?php echo $item['quantity']; ?>']);
-    upsParams.push(['execute']);  
-<?php endforeach; ?>
+    function _qTransactionScript() {
+        window.upsParams = window.upsParams || [];
+        upsParams.push(['transaction', '<?php echo $order->getIncrementId(); ?>']);
+        upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
+        <?php foreach ($order_items as $item): ?>
+        upsParams.push(['action', 'purchase']);
+        upsParams.push(['product', '<?php echo $item['product']; ?>']);
+        upsParams.push(['price', '<?php echo $item['price']; ?>']);
+        upsParams.push(['quantity', '<?php echo $item['quantity']; ?>']);
+        upsParams.push(['execute']);
+        <?php endforeach; ?>
+    }
 </script>
 <?php endif; ?>

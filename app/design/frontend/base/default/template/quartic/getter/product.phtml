@@ -1,10 +1,42 @@
-<?php if ($this->isActive()): ?>
-<script type="text/javascript"> 
-    var upsParams = upsParams || [] 
-    upsParams.push(['action','view'])  
-    upsParams.push(['customer','<?php echo $this->getCustomer(); ?>'])
-    upsParams.push(['user', '<?php echo $this->getUser(); ?>'])
-    upsParams.push(['product', '<?php echo Mage::helper('quartic')->getProduct($this->getProduct()); ?>']) 
-    upsParams.push(['execute'])
+<?php if ($this->isActive()):
+
+    $prod = $this->getProduct();
+    $productId = Mage::helper('quartic')->getProduct($prod);
+    $prices = $this->getProductPrices($prod);
+    $categories = $prod->getCategoryIds();
+    $categoriesData = [];
+    $model = Mage::getModel('catalog/category');
+    foreach($categories as $category) {
+        $catObj = $model->load($category);
+        $categoriesData[] = array(
+            'name' => $catObj->getName(),
+            'id' => $category
+        );
+    }
+    ?>
+<script type="text/javascript">
+    function _qViewScript() {
+        upsParams = window.upsParams || [];
+        upsParams.push(['action', 'view']);
+        upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
+        upsParams.push(['product', '<?php echo $productId; ?>']);
+        upsParams.push(['execute']);
+    }
 </script>
+    <?php if ($this->showQuarticTags($prod)): ?>
+<div class="qON_product" style="display:none"
+     data-qon-id="<?php echo htmlspecialchars($productId); ?>"
+     data-qon-title="<?php echo htmlspecialchars($prod->getName()); ?>"
+     data-qon-status="<?php echo htmlspecialchars($prod->getStatus()); ?>"
+     data-qon-price="<?php echo htmlspecialchars($prices['price']); ?>"
+     data-qon-old-price="<?php echo htmlspecialchars($prices['price'] < $prices['price_old'] ? $prices['price_old'] : ''); ?>"
+     data-qon-link="<?php echo htmlspecialchars($prod->getProductUrl()); ?>"
+     data-qon-image="<?php echo htmlspecialchars($prod->getImageUrl()); ?>"
+<?php foreach($categoriesData as $key => $cat): ?>
+     data-qon-category-<?php echo $key+1; ?>-id="<?php echo htmlspecialchars($cat['id']); ?>"
+     data-qon-category-<?php echo $key+1; ?>-title="<?php echo htmlspecialchars($cat['name']); ?>"
+<?php endforeach; ?>
+></div>
+        <?php endif; ?>
+
 <?php endif; ?>

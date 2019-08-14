@@ -4,6 +4,26 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
 {
 
     /**
+     * Akcja wykonywana przed zaladowaniem kazdej strony backendu
+     * @param Varien_Event_Observer $observer
+     */
+    public function adminPageBefore(Varien_Event_Observer $observer)
+    {
+        if (Mage::app()->getRequest()->getControllerName() == 'system_config') {
+            $params = Mage::app()->getRequest()->getParams();
+            if (isset($params['section']) && in_array($params['section'], array('quartic', 'plugin'))) {
+                $helper = Mage::helper('quartic');
+
+                // jesli brakuje sprobuj utworzyc shop
+                $helper->initQuarticShop();
+
+                // sprawdz czy jest powiazanie z customerem
+                $helper->prepareCustomerData();
+            }
+        }
+    }
+
+    /**
      * Verify api keys entered by user
      * Run after configuration is saved
      *

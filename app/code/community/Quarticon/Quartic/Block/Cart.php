@@ -1,6 +1,6 @@
 <?php
 
-class Quarticon_Quartic_Block_Script extends Mage_Core_Block_Template
+class Quarticon_Quartic_Block_Cart extends Mage_Core_Block_Template
 {
 
     protected function getConfig()
@@ -21,5 +21,15 @@ class Quarticon_Quartic_Block_Script extends Mage_Core_Block_Template
     public function getStoreName()
     {
         return $this->getConfig()->getStoreName();
+    }
+
+    public function getProducts() {
+        $quote = Mage::helper('checkout/cart')->getCart()->getQuote();
+        $items = $quote->getAllVisibleItems();
+        $ids = array();
+        foreach($items as $item) {
+            $ids[] = $item->getProductId();
+        }
+        return implode(',', $ids);
     }
 }

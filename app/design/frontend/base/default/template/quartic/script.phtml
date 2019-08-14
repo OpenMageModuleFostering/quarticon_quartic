@@ -1,4 +1,5 @@
-<?php if ($this->isActive()): ?>
+<?php if ($this->isActive()): /* ?>
+
 <script type="text/javascript">
     var upsParams = upsParams || [];
     upsParams.push(['customer', '<?php echo $this->getCustomer(); ?>']);
@@ -24,5 +25,47 @@
             }
         });
     }
+</script>
+*/ ?>
+<script type="text/javascript">
+    function _qAddEvent(element, eventName, fn) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, fn, false);
+        } else if (element.attachEvent) {
+            if (eventName == 'DOMContentLoaded') {
+                eventName = 'readystatechange';
+                fn = function() {
+                    if ( document.readyState === "complete" ) {
+                        fn();
+                    }
+                };
+            }
+            element.attachEvent('on' + eventName, fn);
+        }
+    }
+    _qAddEvent(window, 'DOMContentLoaded', function() {
+        var _qprods = '';
+        if (typeof _qCartProducts != 'undefined') {
+            _qprods = _qCartProducts();
+        }
+        xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://shopapi.quarticon.com/pluginMagento/content');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            window.upsParams = window.upsParams || [];
+            upsParams.push(['user', '<?php echo $this->getUser(); ?>']);
+            if (xhr.readyState != 4 || xhr.status != 200) return;
+            if (typeof _qViewScript != 'undefined') {
+                _qViewScript();
+            }
+            if (typeof _qTransactionScript != 'undefined') {
+                _qTransactionScript();
+            }
+            eval(xhr.responseText);
+        };
+        var _qparams = 'storeName='+encodeURIComponent('<?php echo $this->getStoreName(); ?>')+'&template=footer';
+        _qparams += '&products='+encodeURIComponent(_qprods);
+        xhr.send(_qparams);
+    });
 </script>
 <?php endif; ?>

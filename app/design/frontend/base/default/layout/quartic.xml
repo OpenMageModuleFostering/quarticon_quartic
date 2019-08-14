@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <layout>
     <default>
-        <reference name="before_body_end">
+        <reference name="after_body_start">
             <block type="quartic/script" name="quartic_script" template="quartic/script.phtml" />
+        </reference>
+        <reference name="head">
+            <action method="addCss">
+                <name>quartic.css</name>
+            </action>
         </reference>
     </default>
     <catalog_product_view>
@@ -15,4 +20,9 @@
             <block type="quartic/getter_order" name="quartic_getter_order" before="quartic_script" template="quartic/getter/order.phtml" />
         </reference>
     </checkout_onepage_success>
+    <checkout_cart_index>
+        <reference name="after_body_start">
+            <block type="quartic/cart" name="quartic_cart" before="quartic_script" template="quartic/cart.phtml" />
+        </reference>
+    </checkout_cart_index>
 </layout>

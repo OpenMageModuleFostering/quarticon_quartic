@@ -1,7 +1,26 @@
 <?xml version="1.0"?>
 <config>
     <sections>
-        <quartic translate="label" module="quartic">
+        <plugin translate="label" module="quartic">
+            <label>Plugin</label>
+            <tab>general</tab>
+            <sort_order>1500</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <config translate="label">
+                    <label>Plugin</label>
+                    <frontend_type>link</frontend_type>
+                    <frontend_model>quartic/adminhtml_system_config_form_iframe</frontend_model>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                </config>
+            </groups>
+        </plugin>
+        <!-- <quartic translate="label" module="quartic">
             <label><![CDATA[<div class="quarticon-headline"></div>QUARTICON | Quartic]]></label>
             <tab>general</tab>
             <sort_order>1600</sort_order>
@@ -18,46 +37,6 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <active translate="label">
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if plugin should be enabled or disabled.</tooltip>
-                        </active>
-                        <customer translate="label">
-                            <label>API username</label>
-                            <frontend_type>text</frontend_type>
-                            <comment>This value is used for API authenthication</comment>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>This value is used for API authentication and can be found in Quartic control panel (settings tab). Field must be filled in order to use this plugin.</tooltip>
-                        </customer>
-                        <api_key translate="label,comment">
-                            <label>API key</label>
-                            <frontend_type>text</frontend_type>
-                            <comment>This value is used for API authenthication</comment>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>This value is used for API authentication and can be found in Quartic control panel (settings tab). Field must be filled in order to use this plugin.</tooltip>
-                        </api_key>
-                        <register translate="label,comment">
-                            <label>Register</label>
-                            <frontend_type>button</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_register</frontend_model>
-                            <comment>Register to obtain values for customer login and key configuration fields</comment>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </register>
                         <show_disabled_products translate="label">
                             <label>Show disabled products in XML feed?</label>
                             <frontend_type>select</frontend_type>
@@ -80,16 +59,6 @@
                             <validate>validate-number validate-zero-or-greater</validate>
                             <tooltip>Set the number of items in stock to mark them as available for sale (this will affect what products are recommended).</tooltip>
                         </min_qty>
-                        <!-- <visibility translate="label">
-                            <label>Product visibility in feed</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>quartic/system_config_source_visibility</source_model>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <sort_order>81</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </visibility> -->
                         <catalog_id translate="label">
                             <label>Quartic Catalog Name</label>
                             <frontend_type>select</frontend_type>
@@ -102,30 +71,6 @@
                             <validate>validate-number</validate>
                             <tooltip>At the beginning select ‘—Create new—‘ this will generate your first product catalog which will be uploaded to our cloud later.</tooltip>
                         </catalog_id>
-                        <getplacements translate="label,comment">
-                            <label>Get Placements</label>
-                            <frontend_type>button</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_button</frontend_model>
-                            <button_url>quartic/adminhtml_api/placements</button_url>
-                            <comment>Load placement snippets from your QuarticON account</comment>
-                            <sort_order>100</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Load placement snippets from your QuarticON account.</tooltip>
-                        </getplacements>
-                        <sendorders translate="label,comment">
-                            <label>Send Transaction History</label>
-                            <frontend_type>button</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_button</frontend_model>
-                            <button_url>quartic/adminhtml_api/prepareorders</button_url>
-                            <comment>Send transaction history to your QuarticON account</comment>
-                            <sort_order>110</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Send transaction history to your QuarticON account.</tooltip>
-                        </sendorders>
                     </fields>
                 </config>
                 <composite translate="label">
@@ -211,394 +156,7 @@
                         </grouped_child_redirect>
                     </fields>
                 </composite>
-                <!-- PLACEMENTS FOR HOME -->
-                <frames_homepage translate="label">
-                    <label>Recommendation frames - Homepage</label>
-                    <frontend_type>fieldset</frontend_type>
-                    <frontend_model>quartic/adminhtml_system_config_form_fieldset</frontend_model>
-                    <allow_empty>true</allow_empty>
-                    <sort_order>30</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <top translate="label">
-                            <label>Top</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_home</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your homepage top placement.</tooltip>
-                        </top>
-                        <top_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>15</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </top_enabled>
-                        <bottom translate="label">
-                            <label>Bottom</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_home</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your homepage bottom placement.</tooltip>
-                        </bottom>
-                        <bottom_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </bottom_enabled>
-                    </fields>
-                </frames_homepage>
-                <!-- PLACEMENTS FOR CATEGORY -->
-                <frames_category translate="label">
-                    <label>Recommendation frames - Category</label>
-                    <frontend_type>fieldset</frontend_type>
-                    <frontend_model>quartic/adminhtml_system_config_form_fieldset</frontend_model>
-                    <allow_empty>true</allow_empty>
-                    <sort_order>40</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <category_use_product_frame translate="label,comment">
-                            <label>Use product frame on category page</label>
-                            <comment>Category page frames will show recommendations related to random product instead of recommendations related to whole category</comment>
-                            <!--<comment>Recommendations will be get for random product from a category</comment>-->
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Category page frames will show recommendations related to random product instead of recommendations related to whole category.</tooltip>
-                        </category_use_product_frame>
-                        <top translate="label">
-                            <label>Top</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_category</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your category top placement.</tooltip>
-                        </top>
-                        <top_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>15</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </top_enabled>
-                        <left translate="label">
-                            <label>Left</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_category</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your category left placement.</tooltip>
-                        </left>
-                        <left_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </left_enabled>
-                        <bottom translate="label">
-                            <label>Bottom</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_category</source_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your category bottom placement.</tooltip>
-                        </bottom>
-                        <bottom_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </bottom_enabled>
-                        <right translate="label">
-                            <label>Right</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_category</source_model>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your category right placement.</tooltip>
-                        </right>
-                        <right_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>45</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </right_enabled>
-                    </fields>
-                </frames_category>
-                <!-- PLACEMENTS FOR PRODUCT -->
-                <frames_product translate="label">
-                    <label>Recommendation frames - Product</label>
-                    <frontend_type>fieldset</frontend_type>
-                    <frontend_model>quartic/adminhtml_system_config_form_fieldset</frontend_model>
-                    <allow_empty>true</allow_empty>
-                    <sort_order>50</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <top translate="label">
-                            <label>Top</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_product</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your product top placement.</tooltip>
-                        </top>
-                        <top_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>15</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </top_enabled>
-                        <middle translate="label">
-                            <label>Middle</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_product</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your product middle placement.</tooltip>
-                        </middle>
-                        <middle_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </middle_enabled>
-                        <bottom translate="label">
-                            <label>Bottom</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_product</source_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your product bottom placement.</tooltip>
-                        </bottom>
-                        <bottom_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </bottom_enabled>
-                        <right translate="label">
-                            <label>Right</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_product</source_model>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your product right placement.</tooltip>
-                        </right>
-                        <right_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>45</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </right_enabled>
-                    </fields>
-                </frames_product>
-                <!-- PLACEMENTS FOR CART -->
-                <frames_cart translate="label">
-                    <label>Recommendation frames - Cart</label>
-                    <frontend_type>fieldset</frontend_type>
-                    <frontend_model>quartic/adminhtml_system_config_form_fieldset</frontend_model>
-                    <allow_empty>true</allow_empty>
-                    <sort_order>60</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <top translate="label">
-                            <label>Top</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_cart</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your cart top placement.</tooltip>
-                        </top>
-                        <top_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>15</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </top_enabled>
-                        <middle translate="label">
-                            <label>Middle</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_cart</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your cart middle placement.</tooltip>
-                        </middle>
-                        <middle_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </middle_enabled>
-                        <bottom translate="label">
-                            <label>Bottom</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_cart</source_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your cart bottom placement.</tooltip>
-                        </bottom>
-                        <bottom_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </bottom_enabled>
-                        <right translate="label">
-                            <label>Right</label>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_placement</frontend_model>
-                            <source_model>quartic/placement_cart</source_model>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select which widget should be displayed on your cart right placement.</tooltip>
-                        </right>
-                        <right_enabled translate="label">
-                            <label><![CDATA[&#9654; Enabled]]></label>
-                            <comment><![CDATA[<br />]]></comment>
-                            <frontend_type>select</frontend_type>
-                            <frontend_model>quartic/adminhtml_system_config_form_field_text</frontend_model>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>45</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <tooltip>Select if widget should be enabled or disabled.</tooltip>
-                        </right_enabled>
-                    </fields>
-                </frames_cart>
             </groups>
-        </quartic>
+        </quartic> -->
     </sections>
 </config>

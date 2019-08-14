@@ -11,7 +11,7 @@ class Quarticon_Quartic_Block_Box extends Mage_Core_Block_Template
     {
         return $this->getConfig()->isActive();
     }
-    
+
     public function getCustomer()
     {
         return $this->getConfig()->getCustomer();

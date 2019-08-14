@@ -12,7 +12,7 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
      * @param string $resource
      * @return array
      */
-    public function get($resource,$storeId = false)
+    public function get($resource, $storeId = false)
     {
         $token = $this->getToken();
         if (empty($token)) {
@@ -23,7 +23,7 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
             throw new Exception('Quartic Api returned empty result.');
         }
         if (!isset($ret['body']['status']) || strtolower($ret['body']['status']) != 'ok') {
-            Mage::log(var_export($ret, true), null, 'quartic.log');
+            $this->getHelper()->log(var_export($ret, true));
             if (isset($ret['body']['data']['error_code'])) {
                 throw new Exception('Quartic Api returned error: ' . $ret['body']['data']['error_message']);
             } else {
@@ -54,9 +54,9 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
             throw new Exception('Quartic Api returned empty result.');
         }
         if (!isset($ret['body']['status']) || strtolower($ret['body']['status']) != 'ok') {
-            Mage::log(var_export("{$resource}", true), null, 'quartic.log');
-            Mage::log(var_export($data, true), null, 'quartic.log');
-            Mage::log(var_export($ret, true), null, 'quartic.log');
+            $this->getHelper()->log(var_export("{$resource}", true));
+            $this->getHelper()->log(var_export($data, true));
+            $this->getHelper()->log(var_export($ret, true));
             if (isset($ret['body']['data']['error_code'])) {
                 throw new Exception('Quartic Api returned error: ' . $ret['body']['data']['error_message']);
             } else {
@@ -87,9 +87,9 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
             throw new Exception('Quartic Api returned empty result.');
         }
         if (!isset($ret['body']['status']) || strtolower($ret['body']['status']) != 'ok') {
-            Mage::log(var_export("{$resource}/{$id}", true), null, 'quartic.log');
-            Mage::log(var_export($data, true), null, 'quartic.log');
-            Mage::log(var_export($ret, true), null, 'quartic.log');
+            $this->getHelper()->log(var_export("{$resource}/{$id}", true));
+            $this->getHelper()->log(var_export($data, true));
+            $this->getHelper()->log(var_export($ret, true));
             if (isset($ret['body']['data']['error_code'])) {
                 throw new Exception('Quartic Api returned error: ' . $ret['body']['data']['error_message']);
             } else {
@@ -107,23 +107,20 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
      */
     public function requestToken($storeId = false)
     {
-		if($storeId === false) {
-			$storeCode = Mage::app()->getRequest()->getParam('store');
-			if($storeCode) {
-				$storeId = Mage::getModel('core/store')->load($storeCode, 'code')->getId();
-			} else {
-				$storeId = 0;
-			}
+		if ($storeId === false) {
+            $storeId = $this->getHelper()->getStoreId();
 		}
 
         $symbol = Mage::getStoreConfig("quartic/config/customer", $storeId);
         $key = Mage::getStoreConfig("quartic/config/api_key", $storeId);
 
-        $ret = $this->getClient()
-            ->post('login', array(
+        $data = array(
             'symbol' => $symbol,
             'key' => $key,
-            ));
+        );
+        $this->getHelper()->log('Login data: '.var_export($data, true));
+        $ret = $this->getClient()
+            ->post('login', $data);
         if (isset($ret['body']['data']['token'])) {
             /**
              * TODO: wymyśl coś z datą, którą dostajemy z api
@@ -143,11 +140,37 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
     public function dropToken($storeId)
     {
         $end = Mage::getModel('core/date')->timestamp('-1 year');
-        $this->setToken(null, $end,$storeId);
+        $this->setToken(null, $end, $storeId);
     }
-    
-    public function catalogType()
+
+    /**
+     * Get catalog type
+     * @param string $name catalog type name
+     * @return int
+     */
+    public function catalogType($name = null)
     {
-        return 4;
+        $defaultId = 4;
+        if ($name == null) {
+            // default quartic xml - backward compatibility
+            return $defaultId;
+        }
+
+        try {
+            $result = $this->get('catalogTypes');
+        } catch (Exception $e) {
+            return array(
+                'status' => 'error',
+                'message' => $e->getMessage()
+            );
+        }
+
+        $types = $result['body']['data'];
+        foreach ($types as $type) {
+            if ($type['name'] == $name) {
+                return $type['id'];
+            }
+        }
+        return $defaultId;
     }
 }

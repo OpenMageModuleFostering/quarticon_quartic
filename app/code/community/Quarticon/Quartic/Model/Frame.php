@@ -10,8 +10,7 @@ class Quarticon_Quartic_Model_Frame extends Mage_Core_Model_Abstract
 
     public function isActive()
     {
-        return true;
-        //return $this->getConfig()->isActive() && $this->getConfig()->isFrameEnabled($this->getFrameName());
+        return $this->getConfig()->isActive();
     }
 
     public function getCustomer()
@@ -31,16 +30,6 @@ class Quarticon_Quartic_Model_Frame extends Mage_Core_Model_Abstract
             $frame = $this->getPlacementFrame();
             $this->setData('frame', $frame);
         }
-		
-		if($this->getFrameName() == 'cart') {
-			$quote = Mage::helper('checkout/cart')->getCart()->getQuote();
-			$items = $quote->getItemsCollection();
-			$ids = '';
-			foreach($items as $item) {
-				$ids .= ',' . $item->getProduct()->getId();
-			}
-			$frame['body'] = str_replace('class="','data-product="' . substr($ids,1) . '" class="',$frame['body']);
-		}
         return $frame['body'];
     }
 
@@ -57,19 +46,12 @@ class Quarticon_Quartic_Model_Frame extends Mage_Core_Model_Abstract
     public function getPlacementFrame()
     {
         $placement = $this->getPlacement();
-        $frame = Mage::getModel('quartic/placement')
-            ->getCollection()
-            ->addFilter('id', array('eq' => $placement['frame_id']))
-            //->addFilter('parent_name', array('eq' => $placement['frame_parent']))
-            ->getFirstItem()
-        ;
-        $check = $frame->getId();
-        if (empty($check)) {
-            return $this->getDefaultFrame();
-        }
+        $div_id = '_qON_'.$placement['frame_parent'].'_'.$placement['frame_id'].'_'.$placement['block_position'];
+
+
         return array(
-            'div_id' => $frame->getDivId(),
-            'body' => $frame->getSnippet()
+            'div_id' => $div_id,
+            'body' => "<div id=\"" . $div_id . "\" class=\"qON_placeholder\"></div>"
         );
     }
 

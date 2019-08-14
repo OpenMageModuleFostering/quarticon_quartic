@@ -1,0 +1,7 @@
+<?php if ($this->isActive()): ?>
+    <script type="text/javascript">
+        function _qCartProducts() {
+            return '<?php echo $this->getProducts() ?>';
+        }
+    </script>
+<?php endif; ?>

@@ -67,50 +67,12 @@ class Quarticon_Quartic_Model_Insert extends Mage_Core_Model_Abstract
      */
     public function loadPlaces($config, $model_insert, $places = array())
     {
-        /**
-         * Load config from magento
-         */
-        $places_config_raw = Mage::getStoreConfig($config, Mage::app()->getStore());
-        /**
-         * Convert it
-         */
-        $places_config = array();
-        if(is_array($places_config_raw)) foreach ($places_config_raw as $k => $v) {
-            if (strpos($k, '_enabled') !== false) {
-                $k = str_replace('_enabled', '', $k);
-                $nk = 'enabled';
-            } else {
-                $nk = 'frame';
-            }
-            if (!isset($places_config[$k])) {
-                $places_config[$k] = array(//$k - where the placement will be used
-                    'frame' => $k, //which placement will be used
-                    'enabled' => 0, //should we display it
-                );
-            }
-            $places_config[$k][$nk] = $v;
-        }
-        foreach ($places_config as $key => $place_config) {
-            if (!$place_config['enabled']) {
-                //ignore disabled places
-                continue;
-            }
-            if (empty($place_config['frame'])) {
-                //ignore places where template was not selected
-                continue;
-            }
-            //where the placement will be used
-            $place = Mage::getModel($model_insert)->getData('places/' . $key);
-            if (!empty($place['block_name'])) {
-                //which frame will be used (from select field)
-                $place['frame_id'] = $place_config['frame'];
-                //layout data
-                $place['frame_parent'] = Mage::getModel($model_insert)->getData('frame_parent');
-                if (!isset($places[$place['block_name']])) {
-                    $places[$place['block_name']] = array();
-                }
-                $places[$place['block_name']][] = $place;
-            }
+        $allPlaces = Mage::getModel($model_insert)->getData('places');
+        $parent = Mage::getModel($model_insert)->getData('frame_parent');
+        foreach($allPlaces as $frameId => $place) {
+            $place['frame_id'] = $frameId;
+            $place['frame_parent'] = $parent;
+            $places[$place['block_name']][] = $place;
         }
         return $places;
     }
