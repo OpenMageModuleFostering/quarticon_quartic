@@ -75,7 +75,7 @@ class Quarticon_Quartic_Model_Insert extends Mage_Core_Model_Abstract
          * Convert it
          */
         $places_config = array();
-        foreach ($places_config_raw as $k => $v) {
+        if(is_array($places_config_raw)) foreach ($places_config_raw as $k => $v) {
             if (strpos($k, '_enabled') !== false) {
                 $k = str_replace('_enabled', '', $k);
                 $nk = 'enabled';

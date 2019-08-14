@@ -10,12 +10,13 @@ class Quarticon_Quartic_Model_Placement_Cart extends Quarticon_Quartic_Model_Pla
      */
     protected function prepareOptionArray()
     {
-        //$inserts = Mage::getModel('quartic/insert_cart')->getData('places');
-        //$limit = array_map('ucfirst', array_keys($inserts));
+        $storeId = $this->getStoreId();
+        $apiName = Mage::getStoreConfig("quartic/config/customer", $storeId);
+
         $options = $this->getCollection()
                 ->addFieldToSelect('*')
+                ->addFieldToFilter('api_name', $apiName)
                 ->addFieldToFilter('parent_name', array('eq' => 'CartPage'))
-                //->addFieldToFilter('name', array('in' => $limit))
                 ->loadData()
                 ->toOptionArray(false);
         return $options;

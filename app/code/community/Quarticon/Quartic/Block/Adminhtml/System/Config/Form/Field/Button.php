@@ -15,8 +15,9 @@ class Quarticon_Quartic_Block_Adminhtml_System_Config_Form_Field_Button extends 
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $this->setElement($element);
-        $url = $this->getUrl($element->getFieldConfig()->button_url);
-
+        $store = $this->getRequest()->getParam('store');
+        $website = $this->getRequest()->getParam('website');
+        $url = $this->getUrl($element->getFieldConfig()->button_url, array('store'=>$store,'website' => $website));
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
             ->setType('button')
             ->setLabel($element->getData('label'))

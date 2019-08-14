@@ -83,4 +83,10 @@ class Quarticon_Quartic_Model_Observer_Frontend
             }
         }
     }
+
+    public function controllerFrontSendResponseBefore($observer)
+    {
+        $front = $observer->getFront();
+        $front->getResponse()->setHeader('Access-Control-Allow-Origin','api.quarticon.com,api.quartic.pl');
+    }
 }

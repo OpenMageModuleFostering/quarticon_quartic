@@ -57,24 +57,33 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
         return $this->_products_table;
     }
 
-    public function getCollectionCount()
+    public function getCollectionCount($storeId = false)
     {
         $sql = 'select count(*) as c from ' . $this->_getOrdersTable() . ' as o '
             . 'left join ' . $this->_getOrderItemsTable() . ' as i '
             . 'on(i.order_id = o.entity_id and i.parent_item_id is null) '
         ;
+		if($storeId) {
+			$storeId = (int)$storeId;
+			$sql .= 'where o.store_id = ' . $storeId;
+		}
 
         $q = $this->_getDB()->fetchRow($sql);
         return $q['c'];
     }
 
-    public function getAll($page_num = 1, $page_size = 10)
+    public function getAll($page_num = 1, $page_size = 10, $storeId = false)
     {
         $sql = 'select o.increment_id, o.created_at, o.customer_id, i.product_id, i.sku, i.qty_ordered, i.price_incl_tax, i.product_type, p.sku as real_sku from ' . $this->_getOrdersTable() . ' as o '
             . 'left join ' . $this->_getOrderItemsTable() . ' as i on(i.order_id = o.entity_id and i.parent_item_id is null) '
-            . 'left join ' . $this->_getProductsTable() . ' as p on(i.product_id = p.entity_id) '
-            . 'order by i.item_id limit ' . (($page_num - 1) * $page_size) . ', ' . $page_size
-        ;
+            . 'left join ' . $this->_getProductsTable() . ' as p on(i.product_id = p.entity_id)';
+			
+		if($storeId) {
+			$storeId = (int)$storeId;
+			$sql .= ' where o.store_id = ' . $storeId;
+		}
+			
+		$sql . ' order by i.item_id limit ' . (($page_num - 1) * $page_size) . ', ' . $page_size;
         $collection = $this->_getDB()->fetchAll($sql);
         foreach ($collection as $order) {
             $o = array(

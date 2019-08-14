@@ -12,11 +12,11 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
      * @param string $resource
      * @return array
      */
-    public function get($resource)
+    public function get($resource,$storeId = false)
     {
         $token = $this->getToken();
         if (empty($token)) {
-            $token = $this->requestToken();
+            $token = $this->requestToken($storeId);
         }
         $ret = $this->getClient()->get($resource . '?token=' . $token);
         if (empty($ret)) {
@@ -105,10 +105,19 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
      * @return string
      * @throws \Exception
      */
-    public function requestToken()
+    public function requestToken($storeId = false)
     {
-        $symbol = Mage::getStoreConfig("quartic/config/customer", Mage::app()->getStore());
-        $key = Mage::getStoreConfig("quartic/config/api_key", Mage::app()->getStore());
+		if($storeId === false) {
+			$storeCode = Mage::app()->getRequest()->getParam('store');
+			if($storeCode) {
+				$storeId = Mage::getModel('core/store')->load($storeCode, 'code')->getId();
+			} else {
+				$storeId = 0;
+			}
+		}
+
+        $symbol = Mage::getStoreConfig("quartic/config/customer", $storeId);
+        $key = Mage::getStoreConfig("quartic/config/api_key", $storeId);
 
         $ret = $this->getClient()
             ->post('login', array(
@@ -121,7 +130,7 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
              */
             //$end = Mage::getModel('core/date')->timestamp($ret['body']['data']['end_date']);
             $end = Mage::getModel('core/date')->timestamp('+5 minutes');
-            $this->setToken($ret['body']['data']['token'], $end);
+            $this->setToken($ret['body']['data']['token'], $end, $storeId);
             return $ret['body']['data']['token'];
         } else {
             throw new \Exception('Could not get token.');
@@ -131,10 +140,10 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
     /**
      * Remove token to force re-login on ext request
      */
-    public function dropToken()
+    public function dropToken($storeId)
     {
         $end = Mage::getModel('core/date')->timestamp('-1 year');
-        $this->setToken(null, $end);
+        $this->setToken(null, $end,$storeId);
     }
     
     public function catalogType()

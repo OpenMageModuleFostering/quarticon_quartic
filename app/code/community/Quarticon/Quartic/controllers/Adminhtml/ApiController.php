@@ -9,21 +9,33 @@ class Quarticon_Quartic_Adminhtml_ApiController extends Mage_Adminhtml_Controlle
     }
 
     public function placementsAction()
-    {
+    {		
+		$stores = Mage::app()->getStores();
+        
         /* @var $session Mage_Adminhtml_Model_Session */
         $session = Mage::getSingleton('adminhtml/session');
 
         try {
             /* @var $frames Quarticon_Quartic_Model_Placement */
             $frames = Mage::getModel('quartic/placement');
-            $loaded = $frames->apiLoad();
-            $session->addSuccess(Mage::helper('quartic')->__('The placements have been synchronised.'));
+			
+			$deleteResult = $frames->deleteAll();
+			if($deleteResult) {
+				$loaded = $frames->apiLoad(0); // for default config value
+				foreach($stores as $store) {
+					$loaded = $frames->apiLoad($store->getId());
+				}
+				
+				$session->addSuccess(Mage::helper('quartic')->__('The placements have been synchronised.'));
+			} else {
+                $session->addError($message);
+			}
         } catch (Exception $e) {
             foreach (explode("\n", $e->getMessage()) as $message) {
-                $session->addError($message);
+                $session->addError($deleteResult['message']);
             }
         }
-        return $this->_redirect('adminhtml/system_config/edit/section/quartic');
+        return $this->_redirectReferer();
     }
 
     /**
@@ -38,6 +50,10 @@ class Quarticon_Quartic_Adminhtml_ApiController extends Mage_Adminhtml_Controlle
 
         /* @var $api Quarticon_Quartic_Model_Client_Api */
         $api = Mage::getModel('quartic/client_api');
+		
+		$storeCode = $this->getRequest()->getParam('store');
+		$websiteCode = $this->getRequest()->getParam('website');
+		$storeId = $this->_getStoreId();
 
         try {
             $_order = Mage::getModel('quartic/order');
@@ -75,9 +91,9 @@ class Quarticon_Quartic_Adminhtml_ApiController extends Mage_Adminhtml_Controlle
             $writer->endElement();
             $writer->endDocument();
 
-            $hash = Mage::getStoreConfig("quartic/config/hash", Mage::app()->getStore()->getStoreId());
+            $hash = Mage::getStoreConfig("quartic/config/hash", $storeId);
             $data = array(
-                'url' => Mage::getUrl('quartic/feed/orders', array('hash' => $hash)),
+                'url' => Mage::getUrl('quartic/feed/orders', array('hash' => $hash, 'store' => $storeId)),
             );
             $helper->log('POST transactions');
             $helper->log(var_export(array('data' => $data), true));
@@ -88,6 +104,20 @@ class Quarticon_Quartic_Adminhtml_ApiController extends Mage_Adminhtml_Controlle
         } catch (Exception $e) {
             $session->addError($e->getMessage());
         }
-        return $this->_redirect('adminhtml/system_config/edit/section/quartic');
+        return $this->_redirect('adminhtml/system_config/edit/section/quartic',array('store'=>$storeCode,'website'=>$websiteCode));
     }
+	
+	private function _getStoreId()
+	{
+		$params = Mage::app()->getRequest()->getParams();
+		if(isset($params['store'])) {
+			$storeId = (is_numeric($params['store'])) ? (int)$params['store'] : Mage::getModel('core/store')->load($params['store'], 'code')->getId();
+		} else {
+			$storeId = Mage::app()->getStore()->getId();
+		}
+		
+		if($storeId == 0) return Mage::app()->getDefaultStoreView()->getStoreId();
+		
+		return $storeId;
+	}
 }

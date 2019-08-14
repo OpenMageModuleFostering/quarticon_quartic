@@ -12,7 +12,7 @@ class Quarticon_Quartic_Model_Catalog extends Mage_Core_Model_Abstract
      * @return array
      */
     public function toOptionArray($isMultiselect = false)
-    {
+    {		
         if (!$this->_options) {
             $this->_options = $this->prepareOptionArray();
         }
@@ -33,8 +33,10 @@ class Quarticon_Quartic_Model_Catalog extends Mage_Core_Model_Abstract
      */
     protected function prepareOptionArray()
     {
+		$storeCode = Mage::app()->getRequest()->getParam('store');
+		$storeId = Mage::getModel('core/store')->load($storeCode, 'code')->getId();
         $cache = Mage::app()->getCacheInstance();
-        $catalogs = $cache->load('quartic-catalogs-list');
+        $catalogs = $cache->load('quartic-catalogs-list-' . $storeId);
         if ($catalogs !== false) {
             return unserialize($catalogs);
         } else {
@@ -80,8 +82,10 @@ class Quarticon_Quartic_Model_Catalog extends Mage_Core_Model_Abstract
      */
     protected function apiLoaded($data = array())
     {
+		$storeCode = Mage::app()->getRequest()->getParam('store');
+		$storeId = Mage::getModel('core/store')->load($storeCode, 'code')->getId();
         $cache = Mage::app()->getCacheInstance();
-        $cache->save(serialize($data), 'quartic-catalogs', array(), 30 * 24 * 3600);
+        $cache->save(serialize($data), 'quartic-catalogs-' . $storeId, array(), 30 * 24 * 3600);
         $list = array();
         foreach ($data as $catalog) {
             $list[] = array(
@@ -89,7 +93,7 @@ class Quarticon_Quartic_Model_Catalog extends Mage_Core_Model_Abstract
                 'label' => $catalog['name'],
             );
         }
-        $cache->save(serialize($list), 'quartic-catalogs-list', array(), 30 * 24 * 3600);
+        $cache->save(serialize($list), 'quartic-catalogs-list-' . $storeId, array(), 30 * 24 * 3600);
         return $list;
     }
 }

@@ -31,6 +31,19 @@ class Quarticon_Quartic_Model_Frame extends Mage_Core_Model_Abstract
             $frame = $this->getPlacementFrame();
             $this->setData('frame', $frame);
         }
+		
+		if($this->getFrameName() == 'cart') {
+			$quote = Mage::helper('checkout/cart')->getCart()->getQuote();
+			$items = $quote->getItemsCollection();
+			$qHelper = Mage::helper('quartic');
+			$idsA = array();
+			foreach($items as $item) {
+				$id = $qHelper->getParentProductId($item->getProduct()->getId());
+				$idsA[$id] = $id;
+			}
+			$ids = implode(',',$idsA);
+			$frame['body'] = str_replace('class="','data-product="' . $ids . '" class="',$frame['body']);
+		}
         return $frame['body'];
     }
 
@@ -70,5 +83,5 @@ class Quarticon_Quartic_Model_Frame extends Mage_Core_Model_Abstract
             'div_id' => $div_id,
             'body' => "<div id=\"" . $div_id . "\"></div>"
         );
-    }
+    }    
 }

@@ -10,12 +10,13 @@ class Quarticon_Quartic_Model_Placement_Product extends Quarticon_Quartic_Model_
      */
     protected function prepareOptionArray()
     {
-        //$inserts = Mage::getModel('quartic/insert_product')->getData('places');
-        //$limit = array_map('ucfirst', array_keys($inserts));
+        $storeId = $this->getStoreId();
+        $apiName = Mage::getStoreConfig("quartic/config/customer", $storeId);
+        
         $options = $this->getCollection()
                 ->addFieldToSelect('*')
+                ->addFieldToFilter('api_name', $apiName)
                 ->addFilter('parent_name', array('eq' => 'ProductPage'))
-                //->addFieldToFilter('name', array('in' => $limit))
                 ->loadData()
                 ->toOptionArray(false);
         return $options;

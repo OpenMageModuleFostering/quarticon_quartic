@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quarticon_Quartic>
-            <version>1.0.2</version>
+            <version>1.0.6</version>
         </Quarticon_Quartic>
     </modules>
     <global>
@@ -93,6 +93,15 @@
                     </quartic>
                 </observers>
             </core_block_abstract_to_html_after>
+            <controller_front_send_response_before>
+                <observers>
+                    <quartic_controller_front_send_response_before>
+                        <type>singleton</type>
+                        <class>quartic/observer_frontend</class>
+                        <method>controllerFrontSendResponseBefore</method>
+                    </quartic_controller_front_send_response_before>
+                </observers>
+            </controller_front_send_response_before>
         </events>
     </frontend>  
     <default>
@@ -105,7 +114,21 @@
                 <show_disabled_products>1</show_disabled_products>
                 <category_use_product_frame>0</category_use_product_frame>
                 <min_qty>0</min_qty>
+                <visibility>4</visibility>
+                <configurable_price>0</configurable_price>
+                <feed>
+                    <product>
+                        <iteration_step>250</iteration_step>
+                    </product>
+                </feed>
             </config>
+            <composite>
+                <configurable_childs>1</configurable_childs>
+                <configurable_child_image>0</configurable_child_image>
+                <configurable_child_price>1</configurable_child_price>
+                <grouped_child_image>0</grouped_child_image>
+                <grouped_child_price>0</grouped_child_price>
+            </composite>
         </quartic>
     </default>
     <adminhtml>
@@ -159,6 +182,18 @@
             </updates>
         </layout>
     </adminhtml>
+    <crontab>
+        <jobs>
+            <quartic>
+                <schedule>
+                    <cron_expr>13 */8 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>quartic/cron::refreshProductsFeed</model>
+                </run>
+            </quartic>
+        </jobs>
+    </crontab>
     <admin>
         <routers>
             <quartic>

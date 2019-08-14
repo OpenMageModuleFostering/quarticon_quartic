@@ -56,11 +56,15 @@ abstract class Quarticon_Quartic_Model_Client_AbstractCurl
      */
     protected function getToken()
     {
+        $storeCode = Mage::app()->getRequest()->getParam('store');
+        $storeId = Mage::getModel('core/store')->load($storeCode, 'code')->getId();
         if (is_null($this->_token)) {
-            $this->_token = Mage::getSingleton('core/session')->getQuarticApiToken();
+            $temp = Mage::getSingleton('core/session')->getQuarticApiToken();
+            $this->_token = isset($temp[$storeId]) ? $temp[$storeId] : null;
         }
         if (!is_null($this->_token)) {
-            $end = Mage::getSingleton('core/session')->getQuarticApiTokenExpires();
+            $temp2 = Mage::getSingleton('core/session')->getQuarticApiTokenExpires();
+            $end = $temp2[$storeId];
             if ($end < Mage::getModel('core/date')->timestamp()) {
                 return null;
             }
@@ -74,11 +78,17 @@ abstract class Quarticon_Quartic_Model_Client_AbstractCurl
      * @return string
      * @throws \Exception
      */
-    protected function setToken($value, $end)
+    protected function setToken($value, $end, $storeId)
     {
         $this->_token = $value;
-        Mage::getSingleton('core/session')->setQuarticApiToken($value);
-        Mage::getSingleton('core/session')->setQuarticApiTokenExpires($end);
+
+        $token = Mage::getSingleton('core/session')->getQuarticApiToken();
+        $token[$storeId] = $value;
+        Mage::getSingleton('core/session')->setQuarticApiToken($token);
+        
+        $tokenExp = Mage::getSingleton('core/session')->setQuarticApiTokenExpires();
+        $tokenExp[$storeId] = $end;
+        Mage::getSingleton('core/session')->setQuarticApiTokenExpires($token);
     }
 
     /**

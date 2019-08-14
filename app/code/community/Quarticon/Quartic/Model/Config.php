@@ -8,16 +8,17 @@ class Quarticon_Quartic_Model_Config extends Mage_Core_Model_Config
         return Mage::getSingleton('customer/session');
     }
 
-    public function saveHash()
+    public function saveHash($area = 'default',$id = 0)
     {
         $hash = md5(microtime());
-        Mage::getModel('core/config')->saveConfig('quartic/config/hash', $hash, 'default', 0);
+        Mage::getModel('core/config')->saveConfig('quartic/config/hash', $hash, $area, $id);
     }
 
     public function getHash($store_id = null)
     {
         return Mage::getStoreConfig('quartic/config/hash', $store_id);
     }
+	
     public function isDebug($store_id = null)
     {
         return (bool) Mage::getStoreConfig('quartic/config/debug', $store_id);
@@ -78,5 +79,50 @@ class Quarticon_Quartic_Model_Config extends Mage_Core_Model_Config
     public function getMinQty($store_id = null)
     {
         return (int) Mage::getStoreConfig('quartic/config/min_qty', $store_id);
+    }
+
+    public function getVisibility($store_id = null)
+    {
+        return explode(',',Mage::getStoreConfig('quartic/config/visibility', $store_id));
+    }
+
+    public function getConfigurablePrice($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/configurable_price', $store_id);
+    }
+
+    public function getShowConfigurableChilds($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/configurable_childs', $store_id);
+    }
+
+    public function getConfigurableChildImage($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/configurable_child_image', $store_id);
+    }
+
+    public function getConfigurableChildPrice($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/configurable_child_price', $store_id);
+    }
+
+    public function getConfigurableChildRedirect($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/configurable_child_redirect', $store_id);
+    }
+
+    public function getGroupedChildImage($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/grouped_child_image', $store_id);
+    }
+
+    public function getGroupedChildPrice($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/grouped_child_price', $store_id);
+    }
+
+    public function getGroupedChildRedirect($store_id = null)
+    {
+        return (int) Mage::getStoreConfig('quartic/composite/grouped_child_redirect', $store_id);
     }
 }
