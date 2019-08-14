@@ -125,9 +125,4 @@ class Quarticon_Quartic_Model_Config extends Mage_Core_Model_Config
     {
         return (int) Mage::getStoreConfig('quartic/composite/grouped_child_redirect', $store_id);
     }
-
-    public function getUseFileCache($store_id = null)
-    {
-        return (int) Mage::getStoreConfig('quartic/config/feed/product/use_file_cache', $store_id);
-    }
 }

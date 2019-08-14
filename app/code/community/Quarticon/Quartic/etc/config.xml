@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quarticon_Quartic>
-            <version>1.2.3.2</version>
+            <version>1.3.0.0</version>
         </Quarticon_Quartic>
     </modules>
     <global>
@@ -119,7 +119,6 @@
                 <feed>
                     <product>
                         <iteration_step>250</iteration_step>
-                        <use_file_cache>0</use_file_cache>
                     </product>
                 </feed>
             </config>

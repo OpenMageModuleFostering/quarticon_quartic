@@ -6,8 +6,6 @@ class Quarticon_Quartic_Model_Cron {
 	{
 		$log = false;
 		if($log) Mage::log('Start',null,'quartic_cron.log',true);
-		if(!Mage::getModel('quartic/config')->getUseFileCache()) return false;
-		if($log) Mage::log('Next',null,'quartic_cron.log',true);
 		
 		$stores = $this->getStoresFeedEnabled();
 		foreach($stores as $storeId) {
