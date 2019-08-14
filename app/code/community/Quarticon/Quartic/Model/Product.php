@@ -2,167 +2,224 @@
 
 // TODO: $product->getFinalPrice() zapycha pamięć.
 
-class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract {
+class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
+{
 
     const ITERATION_STEP = 25;
-    
+
     protected $default_attribute_set_id = null;
     protected $_categories = array();
     protected $_imagesUrl = null;
     protected $_minQty = false;
 
-    protected function getConfig() {
+    protected function getConfig()
+    {
         return Mage::getModel('quartic/config');
     }
-    
-    protected function _getCollection() {
+
+    protected function _getCollection()
+    {
         $_product = Mage::getModel('catalog/product');
         $store = Mage::app()->getStore();
         $collection = $_product->getCollection()
-                ->addStoreFilter($store->getStoreId());
-        return $this->_addDisableFilters($collection);;
+            ->addStoreFilter($store->getStoreId());
+        $updated = Mage::app()->getRequest()->getParam('updated');
+        if ($updated) {
+            $collection->addAttributeToFilter('updated_at', array('gteq' => $updated));
+        }
+        return $this->_addDisableFilters($collection);
+        ;
     }
-    
-    protected function _addDisableFilters($collection) {
+
+    protected function _addDisableFilters($collection)
+    {
         if (!$this->getConfig()->showDisabledProducts()) {
             $collection->addFieldToFilter('status', array('eq' => 1));
         }
         return $collection;
     }
-    
+
     /**
      * If "min_qty" config value is greater than zero, qty is added to the products collection.
      */
-    protected function _addQtyField($collection) {
+    protected function _addQtyField($collection)
+    {
         if ($this->getConfig()->getMinQty()) {
             $collection->joinField(
-                'qty',
-                'cataloginventory/stock_item',
-                'qty',
-                'product_id=entity_id',
-                null,
-                'left'
+                'qty', 'cataloginventory/stock_item', 'qty', 'product_id=entity_id', null, 'left'
             );
         }
         return $collection;
     }
-    
-    public function getCollectionCount() {
+
+    public function getCollectionCount()
+    {
         return $this->_getCollection()->getSize();
     }
+    /*
+     * Get's product collection with attribute mapping
+     */
 
-	protected function _getFinalCollection($page_num = 1, $page_size = 10, $product_id = false) {
-		$collection = $this->_getCollection()
-                ->setPage($page_num, $page_size)
-                ->addAttributeToSelect('price')
-                ->addAttributeToSelect('special_price')
-                ->addAttributeToSelect('name')
-                ->addAttributeToSelect('category_ids')
-                ->addAttributeToSelect('visibility')
-                ->addAttributeToSelect('status')
-                ->addAttributeToSelect('sku');
-        foreach ($additional_attributes as $code => $options) {
-            $collection->addAttributeToSelect($code);
+    protected function _getFinalCollection($page_num = 1, $page_size = 10, $product_id = false)
+    {
+
+        $additional_attributes = $this->getMapping();
+
+        $collection = $this->_getCollection()
+            ->setPage($page_num, $page_size)
+            ->addAttributeToSelect('price')
+            ->addAttributeToSelect('special_price')
+            ->addAttributeToSelect('name')
+            ->addAttributeToSelect('category_ids')
+            ->addAttributeToSelect('visibility')
+            ->addAttributeToSelect('status')
+            ->addAttributeToSelect('sku');
+        foreach ($additional_attributes as $code => $option) {
+            $collection->addAttributeToSelect($option);
         }
-		if ($product_id) {
-			$collection->addFieldToFilter('entity_id', $product_id);
-		}
+        if ($product_id) {
+            $collection->addFieldToFilter('entity_id', $product_id);
+        }
         $collection = $this->_addAdditionalAttributes($collection);
         $collection = $this->_addQtyField($collection);
-		return $collection;
-	}
-	
-    public function getAll($page_num = 1, $page_size = 10) {
-        $author_mapping = $this->getConfig()->getAuthorMapping();
-        $_attribute = Mage::getModel('quartic/attribute');
-        $additional_attributes = array();
-        if (!empty($author_mapping)) {
-            $additional_attributes[$author_mapping] = $_attribute->getOptionsByCode($author_mapping);
-        }
+        return $collection;
+    }
+
+    public function getAll($page_num = 1, $page_size = 10)
+    {
+        $additional_attributes = $this->getMapping();
         $collection = $this->_getFinalCollection($page_num, $page_size, false);
         $offers = array();
         $media = $this->getConfig()->addThumbs() ? $this->getMediaData($collection) : array();
         if (!empty($media)) {
             $this->_imagesUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'catalog/product';
         }
-		$product_items = $collection->getItems();
+        $product_items = $collection->getItems();
         foreach ($product_items as $id => $product) {
-			$images = isset($media[$product->getId()]) ? $media[$product->getId()] : array();
-			$configurable_id = $this->getConfigurableIdByChildId($product->getId());
-			if ($configurable_id !== 0) {
-				// Do not show configurable product children
-				continue;
-			}
-			$offers[] = $this->handleProductToGetOffer($product, $images, $additional_attributes);
+            $images = isset($media[$product->getId()]) ? $media[$product->getId()] : array();
+            $configurable_id = $this->getConfigurableIdByChildId($product->getId());
+            if ($configurable_id !== 0) {
+                // Do not show configurable product children
+                continue;
+            }
+            $offers[] = $this->handleProductToGetOffer($product, $images, $additional_attributes);
         }
         $collection->clear();
         unset($collection);
         unset($media);
         return $offers;
     }
-	
-	protected function _getSingleProduct($product_id) {
-		$collection = $this->_getFinalCollection(1, 1, $product_id);
-		$product = $collection->getFirstItem();
-		if ($product->getId()) {
-			return $product;
-		}
-		return false;
-	}
-	
-	/*
+
+    protected function _getSingleProduct($product_id)
+    {
+        $collection = $this->_getFinalCollection(1, 1, $product_id);
+        $product = $collection->getFirstItem();
+        if ($product->getId()) {
+            return $product;
+        }
+        return false;
+    }
+    /*
      * Method that prepares one product to be appended to $offers table
      * 
      * $product - product to be processed
      * $images - object with media data
-	 * $additional_attributes - definitions of additional product attributes
+     * $additional_attributes - definitions of additional product attributes
      * $rewrite_url - URL that rewrites standard product URL. If null then no rewrite is executed
      */
-    protected function handleProductToGetOffer($product, $images, $additional_attributes = array()) {
-		$category_ids = array_slice($product->getCategoryIds(), 0, 6);
-		$offer = array(
-			'id' => Mage::helper('quartic')->getProduct($product),
-			'title' => $product->getName(),
-			'price' => $this->getFinalPriceIncludingTax($product),
-			'link' => $product->getProductUrl(),
-			'categories' => $this->getCategories($category_ids),
-			'status' => $this->_getStatus($product)
-		);
-		$special_price = $product->getSpecialPrice();
-		if ($special_price) {
-			$offer['old_price'] = $this->getPriceIncludingTax($product);
-		}
-		foreach ($images as $image) {
-			$disabled = (bool) (($image['disabled'] !== null) ? $image['disabled'] : $image['disabled_default']);
-			if (!$disabled) {
-				$offer['thumb'] = $this->_imagesUrl . $image['file'];
-				break;
-			}
-		}
-		unset($images);
-		if (!empty($author_mapping)) {
-			$value = $product->getData($author_mapping);
-			if (!empty($value)) {
-				$options = $additional_attributes[$author_mapping];
-				if (!empty($options)) {
-					$offer['author'] = $options[$value];
-				} else {
-					$offer['author'] = $value;
-				}
-			}
-			unset($value);
-		}
-		$product->clearInstance();
-		unset($product);
+
+    protected function handleProductToGetOffer($product, $images, $additional_attributes = array())
+    {
+        $category_ids = array_slice($product->getCategoryIds(), 0, 6);
+        $map = $this->getMapping();
+
+        $price = $product->getData($map['price']);
+        $product->setPrice($price); // for proper getFinalPrice calculation
+
+        /**
+         * Map fields
+         */
+        $offer = array(
+            'id' => Mage::helper('quartic')->getProduct($product),
+            'title' => !empty($map['title']) ? $product->getData($map['title']) : '',
+            'price' => $this->getFinalPriceIncludingTax($product),
+            'old_price' => !empty($map['old_price']) ? $product->getData($map['old_price']) : '',
+            'link' => $product->getProductUrl(),
+            'categories' => $this->getCategories($category_ids),
+            'status' => $this->_getStatus($product)
+        );
+        /**
+         * Map custom fields
+         */
+        $i = 1;
+        while ($i <= 5) {
+            $key = 'custom' . $i;
+            if (!empty($map[$key])) {
+                $offer[$key] = $product->getData($map[$key]);
+            }
+            $i++;
+        }
+        $special_price = $product->getSpecialPrice();
+        if ($special_price) {
+            $offer['old_price'] = $this->getPriceIncludingTax($product);
+        }
+        foreach ($images as $image) {
+            $disabled = (bool) (($image['disabled'] !== null) ? $image['disabled'] : $image['disabled_default']);
+            if (!$disabled) {
+                $offer['thumb'] = $this->_imagesUrl . $image['file'];
+                break;
+            }
+        }
+        unset($images);
+        if (!empty($author_mapping)) {
+            $value = $product->getData($author_mapping);
+            if (!empty($value)) {
+                $options = $additional_attributes[$author_mapping];
+                if (!empty($options)) {
+                    $offer['author'] = $options[$value];
+                } else {
+                    $offer['author'] = $value;
+                }
+            }
+            unset($value);
+        }
+        $product->clearInstance();
+        unset($product);
         return $offer;
     }
-    
-    public function getMediaData($_productCollection) {
-		if (is_array($_productCollection)) {
-			$all_ids = $_productCollection;
-		} else {
-			$all_ids = $_productCollection->getAllIds();
-		}
+    /*
+     * get attributes map for product feed via handleProductToGetOffer method
+     * 
+     * @return Array
+     * 
+     */
+
+    public function getMapping()
+    {
+        $mapping = array();
+        $collection = Mage::getModel('quartic/maps')->getCollection();
+        foreach ($collection as $element) {
+            $attr = $element->getData('magento_attribute');
+            if (!empty($attr)) {
+                $mapping[$element->getData('quartic_attribute')] = $attr;
+            }
+        }
+        return $mapping;
+    }
+
+    /**
+     * Gets media gallery for products;
+     *
+     * $param array|collection $_productCollection
+     * @return array
+     */
+    public function getMediaData($_productCollection)
+    {
+        if (is_array($_productCollection)) {
+            $all_ids = $_productCollection;
+        } else {
+            $all_ids = $_productCollection->getAllIds();
+        }
         $_mediaGalleryByProductId = array();
         if (!empty($all_ids)) {
             $_mediaGalleryAttributeId = Mage::getSingleton('eav/config')->getAttribute('catalog_product', 'media_gallery')->getAttributeId();
@@ -199,24 +256,28 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract {
         return $_mediaGalleryByProductId;
     }
 
-    public function getFinalPriceIncludingTax($product) {
+    public function getFinalPriceIncludingTax($product)
+    {
         return Mage::helper('tax')->getPrice($product, $product->getFinalPrice(), 2);
     }
 
-    public function getPriceIncludingTax($product) {
+    public function getPriceIncludingTax($product)
+    {
         return Mage::helper('tax')->getPrice($product, $product->getPrice(), 2);
     }
 
-    protected function _addAdditionalAttributes($collection) {
+    protected function _addAdditionalAttributes($collection)
+    {
         return $collection;
     }
-    
+
     /**
      * Gets "min_qty" value from config.
-     * 
+     *
      * @return int
      */
-    protected function _getMinQty() {
+    protected function _getMinQty()
+    {
         if ($this->_minQty === false) {
             $this->_minQty = $this->getConfig()->getMinQty();
         }
@@ -228,29 +289,33 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract {
      * If product is invisible, status equals 0.
      * If product stock qty is lower than "min_qty" config value, status equals 0.
      * Else, status equals 1.
-     * 
+     *
+     * @deprecated deprecated since version 0.5.6 with status attribute mapping
      * @param Mage_Catalog_Model_Product $product
      * @return bool
      */
-    protected function _getStatus($product) {
+    protected function _getStatus($product)
+    {
         return $product->isVisibleInSiteVisibility() && $product->isVisibleInCatalog() && ($this->_getMinQty() ? $product->getQty() >= $this->_getMinQty() : true);
     }
-	
-	/**
+
+    /**
      * Gets id of a configurable product for specified child product
-     * 
+     *
      * @param Mage_Catalog_Model_Product $child
      * @return int
      */
-    public function getConfigurableIdByChildId($childId) {
+    public function getConfigurableIdByChildId($childId)
+    {
         $ids = Mage::getSingleton('catalog/product_type_configurable')->getParentIdsByChild($childId);
         if (!empty($ids)) {
             return (int) array_shift($ids);
         }
         return 0;
     }
-    
-    protected function getCategories($categoryIds) {
+
+    protected function getCategories($categoryIds)
+    {
         $categories = array();
         $categoryIdsToAdd = array();
         foreach ($categoryIds as $categoryId) {
@@ -262,10 +327,10 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract {
         }
         if (!empty($categoryIdsToAdd)) {
             $collection = Mage::getModel('catalog/category')
-                    ->getCollection()
-                    ->addAttributeToSelect('name')
-                    ->addAttributeToFilter('entity_id', $categoryIdsToAdd)
-                    ->setPage(0, count($categoryIdsToAdd));
+                ->getCollection()
+                ->addAttributeToSelect('name')
+                ->addAttributeToFilter('entity_id', $categoryIdsToAdd)
+                ->setPage(0, count($categoryIdsToAdd));
             foreach ($collection as $category) {
                 $this->_categories[$category->getId()] = $category->getName();
                 $categories[$category->getId()] = $category->getName();
@@ -273,5 +338,4 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract {
         }
         return $categories;
     }
-
 }

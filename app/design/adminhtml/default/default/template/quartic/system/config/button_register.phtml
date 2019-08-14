@@ -1,0 +1,10 @@
+<?php echo $this->getButtonHtml() ?>
+
+<script type="text/javascript">
+    //<![CDATA[
+    function qon_check() {
+        var qon_reg = window.open('<?php echo $this->getRegisterUrl() ?>');
+        window.qon_reg = qon_reg;
+    }
+    //]]>
+</script>

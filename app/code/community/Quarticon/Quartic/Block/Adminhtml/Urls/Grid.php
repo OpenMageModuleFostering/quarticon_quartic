@@ -1,18 +1,22 @@
 <?php
-class Quarticon_Quartic_Block_Admin_Urls_Grid extends Mage_Adminhtml_Block_Widget_Grid {
+class Quarticon_Quartic_Block_Adminhtml_Urls_Grid extends Mage_Adminhtml_Block_Widget_Grid
+{
     
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->setId('quartic_urls_grid');
         $this->setDefaultSort('name');
         $this->setDefaultDir('asc');
     }
     
-    protected function getConfig() {
+    protected function getConfig()
+    {
         return Mage::getModel('quartic/config');
     }
     
-    protected function _prepareCollection(){
+    protected function _prepareCollection()
+    {
         $collection = Mage::getModel('core/store')->getCollection();
         foreach ($collection as &$item) {
             $item->setQuarticProductsUrl($item->getUrl('quartic/feed/products', array('hash' => $this->getConfig()->getHash())));
@@ -22,7 +26,8 @@ class Quarticon_Quartic_Block_Admin_Urls_Grid extends Mage_Adminhtml_Block_Widge
         return parent::_prepareCollection();
     }
     
-    protected function _prepareColumns() {
+    protected function _prepareColumns()
+    {
         $this->addColumn('store_id', array(
             'header' => Mage::helper('quartic')->__('Store ID'),
             'align' => 'right',
@@ -48,8 +53,8 @@ class Quarticon_Quartic_Block_Admin_Urls_Grid extends Mage_Adminhtml_Block_Widge
         return parent::_prepareColumns();
     }
     
-    public function getRowUrl($row) {
+    public function getRowUrl($row)
+    {
         //return $row->getCeneoUrl();
     }
-    
 }

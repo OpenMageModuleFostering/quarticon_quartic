@@ -1,37 +1,10 @@
 <?xml version="1.0"?>
 <config>
     <modules>
-       <Quarticon_Quartic>
-          <version>0.3.3</version>
-       </Quarticon_Quartic>
+        <Quarticon_Quartic>
+            <version>0.3.6</version>
+        </Quarticon_Quartic>
     </modules>
-    <frontend>
-        <routers>
-            <quartic>
-                <use>standard</use>
-                <args>
-                    <module>Quarticon_Quartic</module>
-                    <frontName>quartic</frontName>
-                </args>
-            </quartic>
-        </routers>
-        <layout>
-            <updates>
-                <quartic>
-                    <file>quartic.xml</file>
-                </quartic>
-            </updates>
-        </layout>
-        <translate>
-            <modules>
-                <Quarticon_Quartic>
-                    <files>
-                        <default>Quarticon_Quartic.csv</default>
-                    </files>
-                </Quarticon_Quartic>
-            </modules>
-        </translate>
-    </frontend>  
     <global>
         <blocks>
             <quartic>
@@ -41,7 +14,22 @@
         <models>
             <quartic>
                 <class>Quarticon_Quartic_Model</class>
+                <resourceModel>quartic_mysql4</resourceModel>
             </quartic>
+            <quartic_mysql4>
+                <class>Quarticon_Quartic_Model_Mysql4</class>
+                <entities>
+                    <placement>
+                        <table>quartic_placements</table>
+                    </placement>
+                    <history>
+                        <table>quartic_history</table>
+                    </history>
+                    <maps>
+                        <table>quartic_maps</table>
+                    </maps>
+                </entities>
+            </quartic_mysql4>
         </models>
         <resources>
             <quartic_setup>
@@ -69,6 +57,44 @@
             </quartic>
         </helpers>
     </global>
+    <frontend>
+        <routers>
+            <quartic>
+                <use>standard</use>
+                <args>
+                    <module>Quarticon_Quartic</module>
+                    <frontName>quartic</frontName>
+                </args>
+            </quartic>
+        </routers>
+        <layout>
+            <updates>
+                <quartic>
+                    <file>quartic.xml</file>
+                </quartic>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Quarticon_Quartic>
+                    <files>
+                        <default>Quarticon_Quartic.csv</default>
+                    </files>
+                </Quarticon_Quartic>
+            </modules>
+        </translate>        
+        <events>
+            <core_block_abstract_to_html_after>
+                <observers>
+                    <quartic>
+                        <type>singleton</type>
+                        <class>quartic/observer_frontend</class>
+                        <method>blockAbstractToHtmlAfter</method>
+                    </quartic>
+                </observers>
+            </core_block_abstract_to_html_after>
+        </events>
+    </frontend>  
     <default>
         <quartic>
             <config>
@@ -83,6 +109,17 @@
         </quartic>
     </default>
     <adminhtml>
+        <events>
+            <admin_system_config_changed_section_quartic>
+                <observers>
+                    <quartic>
+                        <type>singleton</type>
+                        <class>quartic/observer_adminhtml</class>
+                        <method>handle_adminSystemConfigChangedSection</method>
+                    </quartic>
+                </observers>
+            </admin_system_config_changed_section_quartic>
+        </events>
         <translate>
             <modules>
                 <Quarticon_Quartic>
@@ -94,6 +131,9 @@
         </translate>
         <acl>
             <resources>
+                <!--<all>
+                    <title>Allow Everything</title>
+                </all>-->
                 <admin>
                     <children>
                         <system>

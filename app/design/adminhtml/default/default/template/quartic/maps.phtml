@@ -1,0 +1,18 @@
+<div class="content-header">
+    <table cellspacing="0">
+        <tr>
+            <td style="width:50%;"><h3><?php echo Mage::helper('quartic')->__('Quartic attributes map') ?></h3></td>
+        </tr>
+    </table>
+</div>
+<div>
+    <form action="<?php echo $this->getUrl('*/adminhtml_maps/massSave'); ?>" method="POST">
+        <input type="hidden" name="form_key" value="<?= $this->getFormKey(); ?>" />
+        <?php echo $this->getChildHtml() ?>
+
+        <button title="<?php echo $this->__('Save mapping'); ?>" class="scalable ">
+            <span><span><span><?php echo $this->__('Save mapping'); ?></span></span></span>
+        </button>
+
+    </form>
+</div>

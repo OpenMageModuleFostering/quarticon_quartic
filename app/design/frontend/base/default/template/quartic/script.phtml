@@ -1,9 +1,10 @@
 <?php if ($this->isActive()): ?>
 <script type="text/javascript">
+    var upsParams = upsParams || [];
+    upsParams.push(['customer', '<?php echo $this->getCustomer(); ?>']);
     var upsScript = document.createElement('script');
-    var upsProtocol = ((document.location.protocol=='https:')?'https://secu':'http://');
     upsScript.setAttribute('type','text/javascript');
-    upsScript.setAttribute('src', upsProtocol+'rec.quartic.pl/quartic.js');
+    upsScript.setAttribute('src', '//rec.quartic.pl/qon.js');
     upsScript.setAttribute('async','async');
     var upsAnchor = document.getElementsByTagName('script')[0];
     upsAnchor.parentNode.insertBefore(upsScript, upsAnchor);

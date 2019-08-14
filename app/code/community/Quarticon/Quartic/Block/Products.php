@@ -1,11 +1,14 @@
 <?php
-class Quarticon_Quartic_Block_Products extends Mage_Catalog_Block_Product_List {
+class Quarticon_Quartic_Block_Products extends Mage_Catalog_Block_Product_List
+{
     
-    protected function getConfig() {
+    protected function getConfig()
+    {
         return Mage::getSingleton('quartic/config');
     }
     
-    public function getLoadedProductCollection() {
+    public function getLoadedProductCollection()
+    {
         
         $use_sku = $this->getConfig()->isUsingSkuEnabled(); /* SKU or ID */
         $request = $this->getRequest();
@@ -28,29 +31,29 @@ class Quarticon_Quartic_Block_Products extends Mage_Catalog_Block_Product_List {
                 '{{table}}.stock_id=1',
                 'left'
             )
-            ->addAttributeToFilter('qty', array('gt' => 0));
+                ->addAttributeToFilter('qty', array('gt' => 0));
         }
         return $collection;
     }
     
-    public function getQuarticUrl($product) {
-	    $use_sku = $this->getConfig()->isUsingSkuEnabled(); /* SKU or ID */
-	    if ($use_sku) {
-		    $skuid = $product->getSku();
-	    }
-	    else {
-		    $skuid = $product->getId();
-	    }
+    public function getQuarticUrl($product)
+    {
+        $use_sku = $this->getConfig()->isUsingSkuEnabled(); /* SKU or ID */
+        if ($use_sku) {
+            $skuid = $product->getSku();
+        } else {
+            $skuid = $product->getId();
+        }
         $request = $this->getRequest();
         $skuid_array = $request->getParam('sku');
         $url_array = $request->getParam('url');
         $i = array_search($skuid, $skuid_array);
         $quartic_url = $url_array[$i] ? $url_array[$i] : $product->getProductUrl();
-		return $quartic_url;
+        return $quartic_url;
     }
     
-    public function getQuarticAddToCartUrl($product) {    	
-    	return $this->getAddToCartUrl($product);
+    public function getQuarticAddToCartUrl($product)
+    {
+        return $this->getAddToCartUrl($product);
     }
-    
 }

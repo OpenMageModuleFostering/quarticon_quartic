@@ -9,7 +9,22 @@
     </default>
     <quartic_adminhtml_index_urls>
         <reference name="content">
-            <block type="quartic/admin_urls" name="quartic_urls" />
+            <block type="quartic/adminhtml_urls" name="quartic_urls" />
         </reference>
     </quartic_adminhtml_index_urls>
+    <quartic_adminhtml_maps_index>
+        <reference name="content">
+            <block type="quartic/adminhtml_maps" name="quartic_maps" />
+        </reference>
+    </quartic_adminhtml_maps_index>
+    <quartic_adminhtml_history_index>
+        <reference name="content">
+            <block type="quartic/adminhtml_history" name="quartic_history" />
+        </reference>
+    </quartic_adminhtml_history_index>
+    <quartic_adminhtml_api_placements>
+        <reference name="content">
+            <block type="quartic/adminhtml_api_dump" name="quartic_result" />
+        </reference>
+    </quartic_adminhtml_api_placements>
 </layout>

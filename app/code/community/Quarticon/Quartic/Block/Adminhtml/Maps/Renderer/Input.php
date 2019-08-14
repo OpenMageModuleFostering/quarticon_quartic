@@ -1,0 +1,5 @@
+<?php
+
+class Quarticon_Quartic_Block_Adminhtml_Maps_Renderer_Input extends Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Input
+{
+}
