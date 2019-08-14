@@ -25,9 +25,4 @@ class Quarticon_Quartic_Adminhtml_MapsController extends Mage_Adminhtml_Controll
         }
         $this->_redirect("*/*/");
     }
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('quartic/maps');
-    }
 }

@@ -2,14 +2,11 @@
 $installer = $this;
 $installer->startSetup();
 
-$installer->run("
-    ALTER TABLE {$this->getTable('quartic_placements')} 
-    ADD `parent_name` VARCHAR(255) NOT NULL AFTER `qon_parent_id`;
-");
+Mage::getModel('quartic/config')->saveHash();
 
 @mail(
     'contact@quarticon.com',
-    '[Upgrade] Quartic 0.2.2',
+    '[Install] Quartic 0.1.0',
     "IP: " . $_SERVER['SERVER_ADDR'] . "\r\nHost: " . gethostbyaddr($_SERVER['SERVER_ADDR']),
     "From: " . (
         Mage::getStoreConfig('general/store_information/email_address') ?

@@ -106,19 +106,15 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
      * @throws \Exception
      */
     public function requestToken($storeId = false)
-    {		
-		// TODO: przenieść pobieranie storeId do helpera
-		$params = Mage::app()->getRequest()->getParams();
-		if(isset($params['store'])) {
-			$storeId = (is_numeric($params['store'])) ? (int)$params['store'] : Mage::getModel('core/store')->load($params['store'], 'code')->getId();
-		} elseif(isset($params['website'])) {
-			$website = (is_numeric($params['website'])) ? Mage::getModel('core/website')->load($params['website']) : Mage::getModel('core/website')->load($params['website'], 'code');
-			$storeId = $website->getDefaultGroup()->getDefaultStoreId();
-		} else {
-			$storeId = Mage::app()->getStore()->getId();
+    {
+		if($storeId === false) {
+			$storeCode = Mage::app()->getRequest()->getParam('store');
+			if($storeCode) {
+				$storeId = Mage::getModel('core/store')->load($storeCode, 'code')->getId();
+			} else {
+				$storeId = 0;
+			}
 		}
-		if($storeId == 0) $storeId = Mage::app()->getDefaultStoreView()->getStoreId();
-		
 
         $symbol = Mage::getStoreConfig("quartic/config/customer", $storeId);
         $key = Mage::getStoreConfig("quartic/config/api_key", $storeId);

@@ -45,8 +45,6 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
 		} else {
 			$status_array = Mage::getStoreConfig("quartic/config", $observer->getStore());
 		}
-		
-		foreach($status_array as $key => $value) $status_array[$key] = (string)$value;
 
         $status = (
             !empty($status_array['active']) &&

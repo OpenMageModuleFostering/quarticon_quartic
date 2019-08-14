@@ -120,9 +120,4 @@ class Quarticon_Quartic_Adminhtml_ApiController extends Mage_Adminhtml_Controlle
 		
 		return $storeId;
 	}
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('system/config/quartic');
-    }
 }

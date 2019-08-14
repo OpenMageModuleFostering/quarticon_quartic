@@ -6,7 +6,6 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
 {
 
     const ITERATION_STEP_DEFAULT = 250;
-    const CASTEGORIES_LIMIT = 6;
 
     protected $default_attribute_set_id = null;
     protected $_categories = array();
@@ -60,8 +59,6 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
         if ($productIds) {
             $collection->addAttributeToFilter('entity_id', explode(',',$productIds));
         }
-        $websiteId = Mage::getModel('core/store')->load($storeId)->getWebsiteId();
-        $collection->addPriceData(null,$websiteId);
         $collection = $this->_addQtyField($collection);
         $collection = $this->_addDisableFilters($collection);
 		return $collection;
@@ -118,7 +115,7 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
             ->addAttributeToSelect('price', $joinType)
             ->addAttributeToSelect('special_price', $joinType)
             ->addAttributeToSelect('name', $joinType)
-            // ->addAttributeToSelect('category_ids', $joinType)
+            ->addAttributeToSelect('category_ids', $joinType)
             ->addAttributeToSelect('visibility', $joinType)
             ->addAttributeToSelect('status', $joinType)
             ->addAttributeToSelect('url_path', $joinType)
@@ -166,18 +163,7 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
 							$this->_collectedConfigurablePrices[$configurable_id] = $this->getFinalPriceIncludingTax($configurableProduct,true);
 						}
 						// temporary force price for simple product that should show price from it's parent configurable
-                        $configurablePriceType = $this->getConfig()->getConfigurablePrice();
-                        $collectedPrice = $this->_collectedConfigurablePrices[$configurable_id];
-                        if(is_array($collectedPrice)) {
-                            if($configurablePriceType == 1) {
-                                $forcedFinalPrice = $collectedPrice['minPrice'];
-                            } elseif($configurablePriceType == 2) {
-                                $forcedFinalPrice = $collectedPrice['maxPrice'];
-                            }
-                            $product->setFinalPrice($forcedFinalPrice);
-                        } else {
-                            $product->setFinalPrice($this->_collectedConfigurablePrices[$configurable_id]);
-                        }
+						$product->setFinalPrice($this->_collectedConfigurablePrices[$configurable_id]);
 						$product->setSpecialPrice(null);
 						$product->setData($map['old_price'],null);
 					}
@@ -206,15 +192,11 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
 					}
 					if($groupedChildImage == 1) {
 						// temporary force image for simple product that should show image from it's parent configurable
-                        if(isset($groupedProduct) && $groupedProduct->getId()) {
-						    $product->setData('image',$groupedProduct->getData('image'));
-                        }
+						$product->setData('image',$groupedProduct->getData('image'));
 					}
 					if($groupedChildRedirect == 1) {
 						// temporary force url for simple product that should be redirected to it's parent grouped
-                        if(isset($groupedProduct) && $groupedProduct->getId()) {
-                            $product->setData('url', $groupedProduct->getProductUrl());
-                        }
+						$product->setData('url',$groupedProduct->getProductUrl());
 					}
 				}
 			}
@@ -249,6 +231,7 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
     {
         if($product->getData('quarticon_exclude') == 1) return false;
 
+        $category_ids = array_slice($product->getCategoryIds(), 0, 6);
         $map = $this->getMapping();
 
         $price = $product->getData($map['price']);
@@ -261,9 +244,9 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
             'id' => Mage::helper('quartic')->getProduct($product),
             'title' => !empty($map['title']) ? $product->getData($map['title']) : '',
             'price' => $this->getFinalPriceIncludingTax($product),
-            'old_price' => '',
+            'old_price' => !empty($map['old_price']) ? $product->getData($map['old_price']) : '',
             'link' => $product->getProductUrl(),
-            'categories' => $this->getCategories($product->getCategoryIds()),
+            'categories' => $this->getCategories($category_ids),
             'status' => $this->_getStatus($product)
         );
         /**
@@ -425,15 +408,13 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
                 return $result;
             }
         } else {
-            $taxHelper = Mage::helper('tax');
-            return $taxHelper->getPrice($product, $product->getFinalPrice(),($taxHelper->getPriceDisplayType() > 1));
+            return Mage::helper('tax')->getPrice($product, $product->getFinalPrice(), 2);
         }
     }
 
     public function getPriceIncludingTax($product)
     {
-        $taxHelper = Mage::helper('tax');
-        return $taxHelper->getPrice($product, $product->getPrice(),($taxHelper->getPriceDisplayType() > 1));
+        return Mage::helper('tax')->getPrice($product, $product->getPrice(), 2);
     }
 
     protected function _addAdditionalAttributes($collection)
@@ -519,16 +500,13 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
             $collection = Mage::getModel('catalog/category')
                 ->getCollection()
                 ->addAttributeToSelect('name', $joinType)
-                ->addAttributeToFilter('is_active', 1)
                 ->addAttributeToFilter('entity_id', $categoryIdsToAdd)
-                ->setPage(0, self::CASTEGORIES_LIMIT)
-				;
+                ->setPage(0, count($categoryIdsToAdd));
             foreach ($collection as $category) {
                 $this->_categories[$category->getId()] = $category->getName();
                 $categories[$category->getId()] = $category->getName();
             }
         }
-        $categories = array_slice($categories, 0, 6, true);
         return $categories;
     }
 
@@ -569,13 +547,12 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
 
     private function _getStoreId()
     {
-        // Store is already set with quartic/cron model
-//        $params = Mage::app()->getRequest()->getParams();
-//        if(isset($params['store'])) {
-//            $storeId = (is_numeric($params['store'])) ? (int)$params['store'] : Mage::getModel('core/store')->load($params['store'], 'code')->getId();
-//        } else {
+        $params = Mage::app()->getRequest()->getParams();
+        if(isset($params['store'])) {
+            $storeId = (is_numeric($params['store'])) ? (int)$params['store'] : Mage::getModel('core/store')->load($params['store'], 'code')->getId();
+        } else {
             $storeId = Mage::app()->getStore()->getId();
-//        }
+        }
 
         return $storeId;
     }

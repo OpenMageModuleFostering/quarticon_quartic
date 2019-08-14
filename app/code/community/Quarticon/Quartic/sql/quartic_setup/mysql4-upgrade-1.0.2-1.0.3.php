@@ -34,15 +34,15 @@ $setup->addAttribute('catalog_product', 'quarticon_exclude', array(
 		'used_in_product_listing'   => false
     ));
 
-// @mail(
-    // 'contact@quarticon.com',
-    // '[Upgrade] Quartic 1.0.3',
-    // "IP: " . $_SERVER['SERVER_ADDR'] . "\r\nHost: " . gethostbyaddr($_SERVER['SERVER_ADDR']),
-    // "From: " . (
-        // Mage::getStoreConfig('general/store_information/email_address') ?
-            // Mage::getStoreConfig('general/store_information/email_address') :
-            // 'contact@quarticon.com'
-        // )
-// );
+@mail(
+    'contact@quarticon.com',
+    '[Upgrade] Quartic 1.0.3',
+    "IP: " . $_SERVER['SERVER_ADDR'] . "\r\nHost: " . gethostbyaddr($_SERVER['SERVER_ADDR']),
+    "From: " . (
+        Mage::getStoreConfig('general/store_information/email_address') ?
+            Mage::getStoreConfig('general/store_information/email_address') :
+            'contact@quarticon.com'
+        )
+);
 
 $installer->endSetup();

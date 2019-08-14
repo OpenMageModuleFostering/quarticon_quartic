@@ -15,9 +15,4 @@ class Quarticon_Quartic_Adminhtml_IndexController extends Mage_Adminhtml_Control
         $this->loadLayout();
         $this->renderLayout();
     }
-
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('catalog/quartic');
-    }
 }
