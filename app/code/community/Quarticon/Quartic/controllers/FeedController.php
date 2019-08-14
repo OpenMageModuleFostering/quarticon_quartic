@@ -56,7 +56,6 @@ class Quarticon_Quartic_FeedController extends Mage_Core_Controller_Front_Action
     {
         //$this->getResponse()->setBody($responseAjax->toJson());
         if ($this->_startXML()) {
-
             require_once('Zend/Log.php');
 
             header("Content-Type:text/xml");

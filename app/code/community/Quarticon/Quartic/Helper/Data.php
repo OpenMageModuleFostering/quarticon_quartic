@@ -43,7 +43,7 @@ class Quarticon_Quartic_Helper_Data extends Mage_Core_Helper_Abstract
                 is_array($item) ? (isset($item['product_id']) ? $item['product_id'] : $item['id']) :
                     ($item->getProductId() ? $item->getProductId() : $item->getId())
                 );
-            return $product;
+                return $product;
         }
         return false;
     }

@@ -74,7 +74,7 @@ class Quarticon_Quartic_Model_Client_Resource_Curl extends Mage_HTTP_Client_Curl
     /**
      * Make request
      * Rewrite parent, for "PUT" requests
-     * 
+     *
      * @param string $method
      * @param string $uri
      * @param array $params

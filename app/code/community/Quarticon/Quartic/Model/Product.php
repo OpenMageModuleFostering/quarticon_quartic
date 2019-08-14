@@ -46,7 +46,12 @@ class Quarticon_Quartic_Model_Product extends Mage_Core_Model_Abstract
     {
         if ($this->getConfig()->getMinQty()) {
             $collection->joinField(
-                'qty', 'cataloginventory/stock_item', 'qty', 'product_id=entity_id', null, 'left'
+                'qty',
+                'cataloginventory/stock_item',
+                'qty',
+                'product_id=entity_id',
+                null,
+                'left'
             );
         }
         return $collection;

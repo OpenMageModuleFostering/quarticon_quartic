@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quarticon_Quartic>
-            <version>0.3.6</version>
+            <version>1.0.0</version>
         </Quarticon_Quartic>
     </modules>
     <global>

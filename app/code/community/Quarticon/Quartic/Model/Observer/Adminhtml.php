@@ -60,9 +60,31 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
         $cache->cleanType('config');
 
         /**
+         * Registration
          * Catalogs
          */
         if ($status) {
+            /**
+             * Registration
+             */
+            $registered = Mage::getStoreConfig("quartic/config/registered/c_{$status_array['customer']}", $observer->getStore());
+            if (empty($registered)) {
+                try {
+                    $helper->log('POST pluginActivation');
+                    $data = array(
+                        'platform' => 56 //hardcoded magento platform code
+                    );
+                    $helper->log(var_export(array('data' => $data), true));
+                    $helper->log(var_export($api->post('pluginActivation', array('data' => $data)), true));
+                    $config->saveConfig("quartic/config/registered/c_{$status_array['customer']}", 1, 'default', 0);
+                    Mage::app()->getCacheInstance()->cleanType('config');
+                } catch (Exception $e) {
+                    $helper->log("Quartic activation failed: " . $e->getMessage());
+                }
+            }
+            /**
+             * Catalogs
+             */
             $catalog_id = isset($status_array['catalog_id']) ? (int) $status_array['catalog_id'] : 0;
             if ($catalog_id > 0) {
                 /**
@@ -81,14 +103,15 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
                 $cache->cleanType('quartic-products');
                 $data = array(
                     'url' => Mage::getUrl('quartic/feed/products', array('hash' => $status_array['hash'])),
-                    'name' => 'magento_'.time(),
+                    'name' => 'magento_' . time(),
                     'typeId' => $api->catalogType(),
                 );
                 $helper->log('POST catalog');
                 $helper->log(var_export(array('data' => $data), true));
                 $new_catalog = $api->post('catalogs', array('data' => $data));
                 $helper->log(var_export($new_catalog, true));
-                $config->saveConfig('quartic/config/catalog_id', current($new_catalog['body']['data'])['id'], 'default', 0);
+                $retData = current($new_catalog['body']['data']);
+                $config->saveConfig('quartic/config/catalog_id', $retData['id'], 'default', 0);
                 $cache->cleanType('config');
             }
         }

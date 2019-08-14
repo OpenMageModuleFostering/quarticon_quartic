@@ -92,7 +92,8 @@ class Quarticon_Quartic_Model_Order extends Mage_Core_Model_Abstract
         return $orders;
     }
     
-    public function getFilePath() {
+    public function getFilePath()
+    {
         return 'var/cache/quartic_order_feed.xml';
     }
 }

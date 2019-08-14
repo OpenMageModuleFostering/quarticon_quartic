@@ -23,7 +23,7 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
             throw new Exception('Quartic Api returned empty result.');
         }
         if (!isset($ret['body']['status']) || strtolower($ret['body']['status']) != 'ok') {
-            Mage::log(var_export($ret,true), null, 'quartic.log');
+            Mage::log(var_export($ret, true), null, 'quartic.log');
             if (isset($ret['body']['data']['error_code'])) {
                 throw new Exception('Quartic Api returned error: ' . $ret['body']['data']['error_message']);
             } else {
@@ -54,9 +54,9 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
             throw new Exception('Quartic Api returned empty result.');
         }
         if (!isset($ret['body']['status']) || strtolower($ret['body']['status']) != 'ok') {
-            Mage::log(var_export("{$resource}",true), null, 'quartic.log');
-            Mage::log(var_export($data,true), null, 'quartic.log');
-            Mage::log(var_export($ret,true), null, 'quartic.log');
+            Mage::log(var_export("{$resource}", true), null, 'quartic.log');
+            Mage::log(var_export($data, true), null, 'quartic.log');
+            Mage::log(var_export($ret, true), null, 'quartic.log');
             if (isset($ret['body']['data']['error_code'])) {
                 throw new Exception('Quartic Api returned error: ' . $ret['body']['data']['error_message']);
             } else {
@@ -87,9 +87,9 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
             throw new Exception('Quartic Api returned empty result.');
         }
         if (!isset($ret['body']['status']) || strtolower($ret['body']['status']) != 'ok') {
-            Mage::log(var_export("{$resource}/{$id}",true), null, 'quartic.log');
-            Mage::log(var_export($data,true), null, 'quartic.log');
-            Mage::log(var_export($ret,true), null, 'quartic.log');
+            Mage::log(var_export("{$resource}/{$id}", true), null, 'quartic.log');
+            Mage::log(var_export($data, true), null, 'quartic.log');
+            Mage::log(var_export($ret, true), null, 'quartic.log');
             if (isset($ret['body']['data']['error_code'])) {
                 throw new Exception('Quartic Api returned error: ' . $ret['body']['data']['error_message']);
             } else {
@@ -111,10 +111,10 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
         $key = Mage::getStoreConfig("quartic/config/api_key", Mage::app()->getStore());
 
         $ret = $this->getClient()
-            ->post('login', [
+            ->post('login', array(
             'symbol' => $symbol,
             'key' => $key,
-        ]);
+            ));
         if (isset($ret['body']['data']['token'])) {
             /**
              * TODO: wymyśl coś z datą, którą dostajemy z api
@@ -137,7 +137,8 @@ class Quarticon_Quartic_Model_Client_Api extends Quarticon_Quartic_Model_Client_
         $this->setToken(null, $end);
     }
     
-    public function catalogType() {
+    public function catalogType()
+    {
         return 4;
     }
 }
