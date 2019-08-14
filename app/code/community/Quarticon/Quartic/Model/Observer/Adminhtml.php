@@ -5,6 +5,7 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
 
     /**
      * Verify api keys entered by user
+     * Run after configuration is saved
      *
      * @param Varien_Event_Observer $observer
      * @throws Mage_Core_Exception
@@ -59,14 +60,16 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
         $config->saveConfig('quartic/config/status', (int) $status, 'default', 0);
         $cache->cleanType('config');
 
+        if ($status) {
+            $cleared = $this->markRegistered($observer, $status_array['customer']);
+        } else {
+            $cleared = false;
+        }
+
         /**
          * Registration
-         * Catalogs
          */
         if ($status) {
-            /**
-             * Registration
-             */
             $registered = Mage::getStoreConfig("quartic/config/registered/c_{$status_array['customer']}", $observer->getStore());
             if (empty($registered)) {
                 try {
@@ -82,9 +85,11 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
                     $helper->log("Quartic activation failed: " . $e->getMessage());
                 }
             }
-            /**
-             * Catalogs
-             */
+        }
+        /**
+         * Catalogs
+         */
+        if ($status && !$cleared) {
             $catalog_id = isset($status_array['catalog_id']) ? (int) $status_array['catalog_id'] : 0;
             if ($catalog_id > 0) {
                 /**
@@ -114,6 +119,52 @@ class Quarticon_Quartic_Model_Observer_Adminhtml
                 $config->saveConfig('quartic/config/catalog_id', $retData['id'], 'default', 0);
                 $cache->cleanType('config');
             }
+        }
+    }
+
+    /**
+     * 
+     * @param Varien_Event_Observer $observer
+     * @param string $qcustomer QON account login
+     * @return boolean True if data was cleared
+     */
+    public function markRegistered(Varien_Event_Observer $observer, $qcustomer)
+    {
+        $registered = Mage::getStoreConfig("quartic/config/registered/current", $observer->getStore());
+        $cache = Mage::app()->getCacheInstance();
+        /* @var $api Mage_Core_Model_Config */
+        $config = Mage::getModel('core/config');
+        /**
+         * First login - save id
+         */
+        if (empty($registered)) {
+            $config->saveConfig('quartic/config/registered/current', $qcustomer);
+            return false;
+        }
+        /*
+         * Changed accounts - clean previous data
+         */
+        if ($registered !== $qcustomer) {
+            /**
+             * Remove frames
+             */
+            $frames = Mage::getModel('quartic/placement');
+            $collection = $frames->getCollection();
+            foreach ($collection as $item) {
+                $item->delete();
+            }
+
+            $config->deleteConfig('quartic/config/modified_placements');
+            $config->deleteConfig('quartic/config/catalog_id');
+            $config->deleteConfig('quartic/frames_homepage');
+            $config->deleteConfig('quartic/frames_category');
+            $config->deleteConfig('quartic/frames_product');
+            $config->deleteConfig('quartic/frames_cart');
+
+            $config->saveConfig('quartic/config/registered/current', $qcustomer);
+
+            $cache->cleanType('config');
+            return true;
         }
     }
 }
