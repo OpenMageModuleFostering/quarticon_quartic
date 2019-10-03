@@ -1,7 +1,7 @@
 {
-    "name": "OpenMageModuleFostering\/Quarticon_Quartic",
+    "name": "openmage-module-fostering\/quarticon_quartic",
     "type": "magento-module",
-    "license": "OSL-v3.0",
+    "license": "OSL-3.0",
     "homepage": "",
     "description": "Recommend - personalized product recommendations, by QuarticON.com",
     "authors": [
